@@ -109,12 +109,11 @@ def addRouteStop(analyzer, service):
     entry = m.get(analyzer['stops'], service['BusStopCode'])
     if entry is None:
         lstroutes = lt.newList(cmpfunction=compareroutes)
-        lt.addLast(lstroutes, service['ServiceNo']
-                   + '-' + service['Direction'])
+        lt.addLast(lstroutes, service['ServiceNo'])
         m.put(analyzer['stops'], service['BusStopCode'], lstroutes)
     else:
         lstroutes = entry['value']
-        info = service['ServiceNo'] + '-' + service['Direction']
+        info = service['ServiceNo']
         if not lt.isPresent(lstroutes, info):
             lt.addLast(lstroutes, info)
     return analyzer
@@ -215,7 +214,7 @@ def cleanServiceDistance(lastservice, service):
 def formatVertex(service):
     name = service['BusStopCode'] + '-'
     name = name + service['ServiceNo']
-    name = name + '-' + service['Direction']
+#    name = name + '-' + service['Direction']
     return name
 
 
