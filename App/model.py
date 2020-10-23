@@ -18,6 +18,10 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Contribución de:
+ *
+ * Dario Correal
+ *
  """
 import config
 from DISClib.ADT.graph import gr
@@ -30,12 +34,12 @@ from DISClib.Utils import error as error
 assert config
 
 """
-En este archivo definimos los TADs que vamos a usar,
-es decir contiene los modelos con los datos en memoria
+En este archivo definimos los TADs que vamos a usar y las operaciones
+de creacion y consulta sobre las estructuras de datos.
 """
 
 # -----------------------------------------------------
-# API
+#                       API
 # -----------------------------------------------------
 
 
@@ -56,13 +60,13 @@ def newAnalyzer():
                     'paths': None
                     }
 
-        analyzer['stops'] = m.newMap(numelements=6,
+        analyzer['stops'] = m.newMap(numelements=14000,
                                      maptype='PROBING',
                                      comparefunction=compareStopIds)
 
         analyzer['connections'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
-                                              size=5000,
+                                              size=14000,
                                               comparefunction=compareStopIds)
         return analyzer
     except Exception as exp:
@@ -73,7 +77,15 @@ def newAnalyzer():
 
 def addStopConnection(analyzer, lastservice, service):
     """
-    Adiciona las estaciones al grafo como vertices y el arco que los une
+    Adiciona las estaciones al grafo como vertices y arcos entre las
+    estaciones adyacentes.
+
+    Los vertices tienen por nombre el identificador de la estacion
+    seguido de la ruta que sirve.  Por ejemplo:
+
+    75009-10
+
+    Si la estacion sirve otra ruta, se tiene: 75009-101
     """
     try:
         origin = formatVertex(lastservice)
@@ -92,7 +104,7 @@ def addStopConnection(analyzer, lastservice, service):
 
 def addStop(analyzer, stopid):
     """
-    Adiciona una estación al grafo en una ruta especifica
+    Adiciona una estación como un vertice del grafo
     """
     try:
         if not gr.containsVertex(analyzer['connections'], stopid):
@@ -120,6 +132,12 @@ def addRouteStop(analyzer, service):
 
 
 def addRouteConnections(analyzer):
+    """
+    Por cada vertice (cada estacion) se recorre la lista
+    de rutas servidas en dicha estación y se crean
+    arcos entre ellas para representar el cambio de ruta
+    que se puede realizar en una estación.
+    """
     lststops = m.keySet(analyzer['stops'])
     stopsiterator = it.newIterator(lststops)
     while it.hasNext(stopsiterator):
@@ -152,6 +170,7 @@ def addConnection(analyzer, origin, destination, distance):
 def connectedComponents(analyzer):
     """
     Calcula los componentes conectados del grafo
+    Se utiliza el algoritmo de Kosaraju
     """
     analyzer['components'] = scc.KosarajuSCC(analyzer['connections'])
     return scc.connectedComponents(analyzer['components'])
@@ -204,6 +223,8 @@ def totalConnections(analyzer):
 
 def cleanServiceDistance(lastservice, service):
     """
+    En caso de que el archivo tenga un espacio en la
+    distancia, se reemplaza con cero.
     """
     if service['Distance'] == '':
         service['Distance'] = 0
@@ -212,9 +233,12 @@ def cleanServiceDistance(lastservice, service):
 
 
 def formatVertex(service):
+    """
+    Se formatea el nombrer del vertice con el id de la estación
+    seguido de la ruta.
+    """
     name = service['BusStopCode'] + '-'
     name = name + service['ServiceNo']
-#    name = name + '-' + service['Direction']
     return name
 
 

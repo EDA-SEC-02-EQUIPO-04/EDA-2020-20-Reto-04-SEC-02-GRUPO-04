@@ -18,7 +18,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Contribución de:
+ *
+ * Dario Correal
+ *
  """
+
 
 import sys
 import config
@@ -123,18 +128,18 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 4:
-        msg = "Estación Base: BusStopCode-ServiceNo (75009-10): "
+        msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
         initialStation = input(msg)
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 5:
-        destStation = input("Estación destino (Ejemplo: 15151-10): ")
+        destStation = input("Estación destino (Ej: 15151-10): ")
         executiontime = timeit.timeit(optionFive, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 6:
-        destStation = input("Estación destino (Ejemplo: 15151-10): ")
+        destStation = input("Estación destino (Ej: 15151-10): ")
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
