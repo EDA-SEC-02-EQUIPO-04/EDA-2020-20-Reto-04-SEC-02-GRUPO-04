@@ -63,6 +63,7 @@ def printMenu():
     print("4- Establecer estación base:")
     print("5- Hay camino entre estacion base y estación: ")
     print("6- Ruta de costo mínimo desde la estación base y estación: ")
+    print("7- Estación que sirve a mas rutas: ")
     print("0- Salir")
     print("*******************************************")
 
@@ -107,6 +108,12 @@ def optionSix():
         print('No hay camino')
 
 
+def optionSeven():
+    maxvert, maxdeg = controller.servedRoutes(cont)
+    print('Estación: ' + maxvert + '  Total rutas servidas: '
+          + str(maxdeg))
+
+
 """
 Menu principal
 """
@@ -141,6 +148,10 @@ while True:
     elif int(inputs[0]) == 6:
         destStation = input("Estación destino (Ej: 15151-10): ")
         executiontime = timeit.timeit(optionSix, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 7:
+        executiontime = timeit.timeit(optionSeven, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     else:

@@ -125,3 +125,11 @@ def minimumCostPath(analyzer, destStation):
     Retorna el camino de costo minimo desde initialStation a destStation
     """
     return model.minimumCostPath(analyzer, destStation)
+
+
+def servedRoutes(analyzer):
+    """
+    Retorna el camino de costo minimo desde initialStation a destStation
+    """
+    maxvert, maxdeg = model.servedRoutes(analyzer)
+    return maxvert, maxdeg
