@@ -49,15 +49,14 @@ de creacion y consulta sobre las estructuras de datos.
 
 def new_analyzer():
     analyzer = {
-        "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
+        "graph": gr.newGraph(datastructure="ADJ_LIST", directed=True, size=1000, comparefunction=compare_stations),
         "map": m.newMap(comparefunction=compare_ids),
         "list": lt.newList()
     }
     return analyzer
 
 
-# Funciones para agregar informacion al grafo
-
+# Funciones para agregar informacion al grafo.
 def add_trip(analyzer, trip):
     graph = analyzer["graph"]
     lst = analyzer["list"]
@@ -73,12 +72,18 @@ def add_trip(analyzer, trip):
 
 
 def add_station(graph, station_id):
-    if gr.containsVertex(graph, station_id) == False:
+    """
+    Adiciona una estación como vértice al grafo.
+    """
+    if not gr.containsVertex(graph, station_id):
         gr.insertVertex(graph, station_id)
     return graph
 
 
 def add_link(analyzer, graph, start_station_id, end_station_id, duration):
+    """
+    Adiciona un arco entre dos estaciones.
+    """
     key = start_station_id + "+" + end_station_id
     if gr.getEdge(graph, start_station_id, end_station_id) is None:
         gr.addEdge(graph, start_station_id, end_station_id, duration)
@@ -96,7 +101,7 @@ def add_link(analyzer, graph, start_station_id, end_station_id, duration):
 
 
 # ==============================
-# Funciones de consulta
+# Funciones de consulta.
 # ==============================
 
 def total_trips(analyzer):
@@ -124,11 +129,11 @@ def same_cluster(sc, station_1, station_2):
 
 
 # ==============================
-# Funciones Helper
+# Funciones Helper.
 # ==============================
 
 # ==============================
-# Funciones de Comparacion
+# Funciones de Comparación.
 # ==============================
 
 def compare_stations(station_1, station_2):
