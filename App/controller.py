@@ -23,7 +23,7 @@
  * Dario Correal
  *
  """
-
+import os
 import config as cf
 from App import model
 import csv
@@ -41,15 +41,55 @@ recae sobre el controlador.
 #  Inicializacion del catalogo
 # ___________________________________________________
 
-def init():
-    analyzer = model.newAnalyzer()
-    return analyzer
+
+def init_analyzer():
+    return model.new_analyzer()
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
 
+
+def load_trips(analyzer):
+    for filename in os.listdir(cf.data_dir):
+        if filename.endswith(".csv"):
+            print("Cargando archivo: " + filename)
+            load_file(analyzer, filename)
+    return analyzer
+
+def load_file(analyzer, file):
+    file = cf.data_dir + file
+    input_file = csv.DictReader(open(file, encoding="utf-8"), delimiter=",")
+    for trip in input_file:
+        model.add_trip(analyzer, trip)
+    return analyzer
+
+# ___________________________________________________
+#  Funciones para consultas
+# ___________________________________________________
+
+def total_trips(analyzer):
+    return model.total_trips(analyzer)
+
+def vertex_number(analyzer):
+    return model.vertex_number(analyzer)
+
+def edges_number(analyzer):
+    return model.edges_number(analyzer)
+
+def clusters_number(analyzer):
+    return model.clusters_number(analyzer)
+
+def same_cluster(sc, station_1, station_2):
+    return model.same_cluster(sc, station_1, station_2)
+
+
+#Opcion 2
+
+# def init():
+#     analyzer = model.newAnalyzer()
+#     return analyzer
 
 # def loadFile(citibike, tripfile):
 #     tripfile = cf.data_dir + tripfile
