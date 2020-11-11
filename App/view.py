@@ -43,7 +43,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-bikefile = ''
+bikefile = '201801-1-citibike-tripdata.csv'
 initialstation = None
 RecursionLimit = 20000
 
@@ -69,19 +69,22 @@ def printMenu():
 
 def optiontwo():
     print('\nCargando información rutas City Bike ....')
-    controller.loadServices(cont,servicefile)
+    controller.loadFile(cont,bikefile)
     numedges = controller.totalConnections(cont)
-    numvertex = controller.totalStops(cont)
+    numvertex = controller.totalStations(cont)
     print('Número de vertices: ' + str(numvertex))
-    print('Numero de arcos; ' + str(numedges))
-    print('El límire de recursión actual: ' + str(sys.getrecursionlimit()))
+    print('Numero de arcos: ' + str(numedges))
+    print('El límite de recursión actua1l: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(RecursionLimit)
     print('El límite de recursión se ajusta a: ' + str(RecursionLimit))
 
 
 def optionThree():
+    firts_station = input('\nID primera estación: ')
+    second_station = input('ID segunda estación: ')
     print('El número de componentes conectados es: ' +
           str(controller.connectedComponents(cont)))
+    print(controller.sameComponent(cont, firts_station, second_station))
 
 def optionFour():
     None
@@ -114,11 +117,12 @@ while True:
 
     if int(inputs[0]) == 1:
         print('\nInicializando...')
-        cont = controller.int()
+        cont = controller.init()
     elif int(inputs[0]) == 2:
         optiontwo()
     elif int(inputs[0]) == 3:
         optionThree()
+
     elif int(inputs[0]) == 4:
         optionFour()
     elif int(inputs[0]) == 5:
