@@ -42,88 +42,88 @@ de creacion y consulta sobre las estructuras de datos.
 #                       API
 # -----------------------------------------------------
 
-def newAnalyzer():
+# def newAnalyzer():
 
-    try:
-        citibike = {
-                    'stops':  m.newMap(numelements=14000,
-                                     maptype='PROBING',
-                                     comparefunction=compareStopsIds),
-                    'graph': gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=True,
-                                              size=1000,
-                                              comparefunction=compareStopsIds),
-                    'paths': None
-        }
-        return citibike
-    except Exception as exp:
-        error.reraise(exp, 'model:newAnalyzer')
-
-
-# Funciones para agregar informacion al grafos
-
-def addTrip(citibike, trip):
-    origin = trip['start station id']
-    destination = trip['end station id']
-    duration = int(trip['tripduration'])    
-    addStation(citibike, origin)
-    addStation(citibike, destination)    
-    addConnection(citibike, origin, destination, duration)
-    return citibike
-
-def addStation(citibike, stationid):
-    """
-    Adiciona una estación como vértice al grafo
-    """
-    try:
-        if not gr.containsVertex(citibike['graph'], stationid):
-            gr.insertVertex(citibike['graph'], stationid)
-        return citibike
-    except Exception as exp:
-        error.reraise(exp, 'model:addStation')
+#     try:
+#         citibike = {
+#                     'stops':  m.newMap(numelements=14000,
+#                                      maptype='PROBING',
+#                                      comparefunction=compareStopsIds),
+#                     'graph': gr.newGraph(datastructure='ADJ_LIST',
+#                                               directed=True,
+#                                               size=1000,
+#                                               comparefunction=compareStopsIds),
+#                     'paths': None
+#         }
+#         return citibike
+#     except Exception as exp:
+#         error.reraise(exp, 'model:newAnalyzer')
 
 
-def addConnection(citibike, origin, destination, duration):
-    """
-    Adiciona un arco entre dos estaciones
-    """
-    edge = gr.getEdge(citibike['graph'], origin, destination)
-    if edge is None:
-        gr.addEdge(citibike['graph'], origin, destination, duration)
-    return citibike
+# # Funciones para agregar informacion al grafos
+
+# def addTrip(citibike, trip):
+#     origin = trip['start station id']
+#     destination = trip['end station id']
+#     duration = int(trip['tripduration'])    
+#     addStation(citibike, origin)
+#     addStation(citibike, destination)    
+#     addConnection(citibike, origin, destination, duration)
+#     return citibike
+
+# def addStation(citibike, stationid):
+#     """
+#     Adiciona una estación como vértice al grafo
+#     """
+#     try:
+#         if not gr.containsVertex(citibike['graph'], stationid):
+#             gr.insertVertex(citibike['graph'], stationid)
+#         return citibike
+#     except Exception as exp:
+#         error.reraise(exp, 'model:addStation')
 
 
-# ==============================
-# Funciones de consulta
-# ==============================
+# def addConnection(citibike, origin, destination, duration):
+#     """
+#     Adiciona un arco entre dos estaciones
+#     """
+#     edge = gr.getEdge(citibike['graph'], origin, destination)
+#     if edge is None:
+#         gr.addEdge(citibike['graph'], origin, destination, duration)
+#     return citibike
 
-def totalStations(citibike):
-    return gr.numVertices(citibike['graph'])
 
-def totalConnections(citibike):
-    return gr.numEdges(citibike['graph'])
+# # ==============================
+# # Funciones de consulta
+# # ==============================
 
-def numSCC(citibike):
-    citibike['graph'] = scc.KosarajuSCC(citibike['graph'])
-    return scc.connectedComponents(citibike['graph'])
+# def totalStations(citibike):
+#     return gr.numVertices(citibike['graph'])
 
-def sameCC(sc, station1, station2):
-    return scc.stronglyConnected(sc['graph'], station1, station2)
+# def totalConnections(citibike):
+#     return gr.numEdges(citibike['graph'])
 
-# ==============================
-# Funciones Helper
-# ==============================
+# def numSCC(citibike):
+#     citibike['graph'] = scc.KosarajuSCC(citibike['graph'])
+#     return scc.connectedComponents(citibike['graph'])
 
-# ==============================
-# Funciones de Comparacion
-# ==============================
+# def sameCC(sc, station1, station2):
+#     return scc.stronglyConnected(sc['graph'], station1, station2)
 
-def compareStopsIds(stop, keyvaluestop):
+# # ==============================
+# # Funciones Helper
+# # ==============================
+
+# # ==============================
+# # Funciones de Comparacion
+# # ==============================
+
+# def compareStopsIds(stop, keyvaluestop):
     
-    stopcode = keyvaluestop['key']
-    if (stop == stopcode):
-        return 0 
-    elif (stop > stopcode):
-        return 1
-    else:
-        return -1
+#     stopcode = keyvaluestop['key']
+#     if (stop == stopcode):
+#         return 0 
+#     elif (stop > stopcode):
+#         return 1
+#     else:
+#         return -1

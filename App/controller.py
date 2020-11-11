@@ -51,38 +51,38 @@ def init():
 # ___________________________________________________
 
 
-def loadFile(citibike, tripfile):
-    tripfile = cf.data_dir + tripfile
-    input_file = csv.DictReader(open(tripfile, encoding= 'utf-8'), delimiter = ',')
-    for trip in input_file:
-        model.addTrip(citibike,trip)
-    return citibike
+# def loadFile(citibike, tripfile):
+#     tripfile = cf.data_dir + tripfile
+#     input_file = csv.DictReader(open(tripfile, encoding= 'utf-8'), delimiter = ',')
+#     for trip in input_file:
+#         model.addTrip(citibike,trip)
+#     return citibike
 
 
-def loadTrips(citibike):
-    for filename in os.listdir(cf.data_dir):
-        if filename.endswith('.csv'):
-            print('Cargando archivo: ' + filename)
-            loadFile(citibike, filename)
-    return citibike
-# ___________________________________________________
-#  Funciones para consultas
-# ___________________________________________________
+# def loadTrips(citibike):
+#     for filename in os.listdir(cf.data_dir):
+#         if filename.endswith('.csv'):
+#             print('Cargando archivo: ' + filename)
+#             loadFile(citibike, filename)
+#     return citibike
+# # ___________________________________________________
+# #  Funciones para consultas
+# # ___________________________________________________
 
-def totalStations(citibike):
-    return model.totalStations(citibike)
+# def totalStations(citibike):
+#     return model.totalStations(citibike)
 
-def totalConnections(citibike):
-    return model.totalConnections(citibike)
+# def totalConnections(citibike):
+#     return model.totalConnections(citibike)
 
-def connectedComponents(citibike):
-    """
-    Número de componentes fuertemente conectados
-    """
-    return model.numSCC(citibike)
+# def connectedComponents(citibike):
+#     """
+#     Número de componentes fuertemente conectados
+#     """
+#     return model.numSCC(citibike)
 
-def sameComponent(citibike, s1, s2):
-    """
-    Informa si las estaciones están en el mismo componente
-    """
-    return model.sameCC(citibike, s1, s2)
+# def sameComponent(citibike, s1, s2):
+#     """
+#     Informa si las estaciones están en el mismo componente
+#     """
+#     return model.sameCC(citibike, s1, s2)
