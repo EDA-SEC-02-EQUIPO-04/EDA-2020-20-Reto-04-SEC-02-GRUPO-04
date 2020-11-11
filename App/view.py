@@ -74,7 +74,7 @@ def optiontwo():
     numvertex = controller.totalStations(cont)
     print('Número de vertices: ' + str(numvertex))
     print('Numero de arcos: ' + str(numedges))
-    print('El límite de recursión actua1l: ' + str(sys.getrecursionlimit()))
+    print('El límite de recursión actual: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(RecursionLimit)
     print('El límite de recursión se ajusta a: ' + str(RecursionLimit))
 
@@ -84,7 +84,12 @@ def optionThree():
     second_station = input('ID segunda estación: ')
     print('El número de componentes conectados es: ' +
           str(controller.connectedComponents(cont)))
-    print(controller.sameComponent(cont, firts_station, second_station))
+    sc = controller.sameComponent(cont, firts_station, second_station)
+    if (sc == True):
+        print('Las estaciones' + firts_station +' y ' + second_station + ' pertenecen al mismo cluster')
+    else:
+        print('Las estaciones' + firts_station  +' y ' + second_station + ' no pertenecen al mismo cluster')
+
 
 def optionFour():
     None

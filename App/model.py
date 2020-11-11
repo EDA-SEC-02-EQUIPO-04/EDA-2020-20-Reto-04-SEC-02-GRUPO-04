@@ -108,7 +108,7 @@ def numSCC(citibike):
     return scc.connectedComponents(citibike['graph'])
 
 def sameCC(sc, station1, station2):
-    return scc.stronglyConnected(sc, station1, station2)
+    return scc.stronglyConnected(sc['graph'], station1, station2)
 
 # ==============================
 # Funciones Helper
