@@ -32,12 +32,15 @@ from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+
 assert config
 from DISClib.Algorithms.Graphs import scc
+
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
 """
+
 
 # -----------------------------------------------------
 #                       API
@@ -46,11 +49,12 @@ de creacion y consulta sobre las estructuras de datos.
 
 def new_analyzer():
     analyzer = {
-                "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
-                "map": m.newMap(comparefunction=compare_ids),
-                "list": lt.newList()
-                }
+        "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
+        "map": m.newMap(comparefunction=compare_ids),
+        "list": lt.newList()
+    }
     return analyzer
+
 
 # Funciones para agregar informacion al grafo
 
@@ -67,13 +71,15 @@ def add_trip(analyzer, trip):
         add_link(analyzer, graph, start_station, end_station, duration)
     return analyzer
 
+
 def add_station(graph, station_id):
     if gr.containsVertex(graph, station_id) == False:
         gr.insertVertex(graph, station_id)
     return graph
 
+
 def add_link(analyzer, graph, start_station_id, end_station_id, duration):
-    key = start_station_id+"+"+end_station_id
+    key = start_station_id + "+" + end_station_id
     if gr.getEdge(graph, start_station_id, end_station_id) is None:
         gr.addEdge(graph, start_station_id, end_station_id, duration)
         value = {"sum": duration, "trips_num": 1}
@@ -83,10 +89,11 @@ def add_link(analyzer, graph, start_station_id, end_station_id, duration):
         value = me.getValue(entry)
         value["sum"] += duration
         value["trips_num"] += 1
-        avg = value["sum"]/value["trips_num"]
+        avg = value["sum"] / value["trips_num"]
         gr.addEdge(graph, start_station_id, end_station_id, avg)
         m.put(analyzer["map"], key, value)
     return graph
+
 
 # ==============================
 # Funciones de consulta
@@ -96,20 +103,25 @@ def total_trips(analyzer):
     lst = analyzer["list"]
     return lt.size(lst)
 
+
 def vertex_number(analyzer):
     graph = analyzer["graph"]
     return gr.numVertices(graph)
+
 
 def edges_number(analyzer):
     graph = analyzer["graph"]
     return gr.numEdges(graph)
 
+
 def clusters_number(analyzer):
     sc = scc.KosarajuSCC(analyzer["graph"])
     return scc.connectedComponents(sc), sc
 
+
 def same_cluster(sc, station_1, station_2):
     return scc.stronglyConnected(sc, station_1, station_2)
+
 
 # ==============================
 # Funciones Helper
@@ -127,7 +139,8 @@ def compare_stations(station_1, station_2):
     elif station_1 > station_2:
         return 1
     else:
-        return -1 
+        return -1
+
 
 def compare_ids(id1, id2):
     id2 = id2["key"]
@@ -138,8 +151,7 @@ def compare_ids(id1, id2):
     else:
         return -1
 
-
-#Opcion 2
+# Opcion 2
 # def newAnalyzer():
 
 #     try:
@@ -217,7 +229,7 @@ def compare_ids(id1, id2):
 # # ==============================
 
 # def compareStopsIds(stop, keyvaluestop):
-    
+
 #     stopcode = keyvaluestop['key']
 #     if (stop == stopcode):
 #         return 0 

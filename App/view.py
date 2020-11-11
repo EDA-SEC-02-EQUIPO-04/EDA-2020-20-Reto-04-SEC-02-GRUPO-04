@@ -24,12 +24,12 @@
  *
  """
 
-
 import sys
 import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
+
 assert config
 
 """
@@ -44,17 +44,15 @@ operación seleccionada.
 # ___________________________________________________
 
 
-# bikefile = '201801-1-citibike-tripdata.csv'
-# initialstation = None
-# RecursionLimit = 20000
+bikefile = '201801-1-citibike-tripdata.csv'
+initialstation = None
+RecursionLimit = 20000
+
 
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
 
-
-        
-=======
 def print_menu():
     print("\n")
     print("*******************************************")
@@ -72,10 +70,12 @@ def print_menu():
     print("0- Salir")
     print("*******************************************")
 
+
 def option_two():
     print("\nCargando información de bicicletas de Nueva York ....")
     controller.load_trips(cont)
     print("Archivos cargados\n")
+
 
 def option_three():
     clusters_number = controller.clusters_number(cont)
@@ -85,7 +85,8 @@ def option_three():
     else:
         same_cluster = "no"
     print("\nEl total de clusters es:", clusters_number[0])
-    print("Las estaciones",same_cluster,"pertenecen al mismo cluster")
+    print("Las estaciones", same_cluster, "pertenecen al mismo cluster")
+
 
 """
 Menu principal
@@ -102,9 +103,9 @@ while True:
 
     elif int(inputs[0]) == 2:
         execution_time = timeit.timeit(option_two, number=1)
-        print("Número de viajes cargados:",controller.total_trips(cont))
-        print("Número de vértices en el grafo:",controller.vertex_number(cont))
-        print("Número de arcos en el grafo:",controller.edges_number(cont))
+        print("Número de viajes cargados:", controller.total_trips(cont))
+        print("Número de vértices en el grafo:", controller.vertex_number(cont))
+        print("Número de arcos en el grafo:", controller.edges_number(cont))
         print("Tiempo de ejecución: " + str(execution_time))
 
     elif int(inputs[0]) == 3:
@@ -125,7 +126,7 @@ while True:
 
     elif int(inputs[0]) == 7:
         print("No disponible")
-    
+
     elif int(inputs[0]) == 8:
         print("No disponible")
 
@@ -139,8 +140,7 @@ while True:
         sys.exit(0)
 sys.exit(0)
 
-
-#Opción 2
+# Opción 2
 
 
 # def printMenu():
@@ -200,7 +200,7 @@ sys.exit(0)
 
 # def optionNine():
 #     None
- 
+
 # def optionTen():
 #     None
 
@@ -237,5 +237,3 @@ sys.exit(0)
 #     else:
 #         sys.exit(0)
 # sys.exit(0)
-
-
