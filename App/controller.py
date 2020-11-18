@@ -84,45 +84,4 @@ def clusters_number(analyzer):
 def same_cluster(sc, station_1, station_2):
     return model.same_cluster(sc, station_1, station_2)
 
-
-#Opcion 2
-
-# def init():
-#     analyzer = model.newAnalyzer()
-#     return analyzer
-
-# def loadFile(citibike, tripfile):
-#     tripfile = cf.data_dir + tripfile
-#     input_file = csv.DictReader(open(tripfile, encoding= 'utf-8'), delimiter = ',')
-#     for trip in input_file:
-#         model.addTrip(citibike,trip)
-#     return citibike
-
-
-# def loadTrips(citibike):
-#     for filename in os.listdir(cf.data_dir):
-#         if filename.endswith('.csv'):
-#             print('Cargando archivo: ' + filename)
-#             loadFile(citibike, filename)
-#     return citibike
-# # ___________________________________________________
-# #  Funciones para consultas
-# # ___________________________________________________
-
-# def totalStations(citibike):
-#     return model.totalStations(citibike)
-
-# def totalConnections(citibike):
-#     return model.totalConnections(citibike)
-
-# def connectedComponents(citibike):
-#     """
-#     Número de componentes fuertemente conectados
-#     """
-#     return model.numSCC(citibike)
-
-# def sameComponent(citibike, s1, s2):
-#     """
-#     Informa si las estaciones están en el mismo componente
-#     """
-#     return model.sameCC(citibike, s1, s2)
+S
