@@ -25,6 +25,7 @@
  """
 import config
 from DISClib.ADT.graph import gr
+from DISClib.Algorithms.Graphs import dfs
 from DISClib.ADT import map as m
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import list as lt
@@ -47,7 +48,8 @@ def new_analyzer():
     analyzer = {
                 "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
                 "map": m.newMap(comparefunction=compare_ids),
-                "list": lt.newList()
+                "list": lt.newList(),
+                "station_names": m.newMap(comparefunction=compare_ids)
                 }
     return analyzer
 
@@ -56,10 +58,15 @@ def new_analyzer():
 def add_trip(analyzer, trip):
     graph = analyzer["graph"]
     lst = analyzer["list"]
+    station_names = analyzer["station_names"]
     start_station = trip["start station id"]
     end_station = trip["end station id"]
     duration = int(trip["tripduration"])
     lt.addLast(lst, trip)
+    if m.contains(station_names, trip["start station name"]) != True:
+        m.put(station_names, start_station, trip["start station name"])
+    if m.contains(station_names, trip["end station name"]) != True:
+        m.put(station_names, end_station, trip["end station name"])
     add_station(graph, start_station)
     add_station(graph, end_station)
     if start_station != end_station:
@@ -110,6 +117,69 @@ def clusters_number(analyzer):
 def same_cluster(sc, station_1, station_2):
     return scc.stronglyConnected(sc, station_1, station_2)
 
+def top_stations(analyzer, selector):
+    graph = analyzer["graph"]
+    top = lt.newList("SINGLE_LINKED", top_cmpfunction)
+    lst = gr.vertices(graph)
+    lst["cmpfunction"] = lst_cmpfunction
+    greatest = 0
+    greatest_degree = 0
+    counter = 0
+    while counter < 3:
+        iterator = it.newIterator(lst)
+        while it.hasNext(iterator):
+            vertex = it.next(iterator)
+            if selector == "in":
+                degree = gr.indegree(graph, vertex)
+            elif selector == "out":
+                degree = gr.outdegree(graph, vertex)
+            if degree > greatest_degree:
+                greatest = int(vertex)
+                greatest_degree = degree 
+        lt.addLast(top, greatest)
+        pos = lt.isPresent(lst, str(greatest))
+        lt.deleteElement(lst, pos)
+        greatest_degree = 0
+        counter += 1 
+    first_entry = m.get(analyzer["station_names"], str(lt.removeFirst(top)))
+    first = me.getValue(first_entry)
+    second_entry = m.get(analyzer["station_names"], str(lt.removeFirst(top)))
+    second = me.getValue(second_entry)
+    third_entry = m.get(analyzer["station_names"], str(lt.removeFirst(top)))
+    third = me.getValue(third_entry)
+    return first, second, third
+
+def low_stations(analyzer):
+    graph = analyzer["graph"]
+    low_top = lt.newList("SINGLE_LINKED", top_cmpfunction)
+    lst = gr.vertices(graph)
+    lst["cmpfunction"] = lst_cmpfunction
+    lowest = 0
+    lowest_degree = gr.numEdges(graph)
+    counter = 0
+    while counter < 3:
+        iterator = it.newIterator(lst)
+        while it.hasNext(iterator):
+            vertex = it.next(iterator)
+            in_degree = gr.indegree(graph, vertex)
+            out_degree = gr.outdegree(graph, vertex)
+            degree = in_degree + out_degree
+            if degree < lowest_degree:
+                lowest = int(vertex)
+                lowest_degree = degree 
+        lt.addLast(low_top, lowest)
+        pos = lt.isPresent(lst, str(lowest))
+        lt.deleteElement(lst, pos)
+        lowest_degree = gr.numEdges(graph)
+        counter += 1 
+    first_entry = m.get(analyzer["station_names"], str(lt.removeFirst(low_top)))
+    first = me.getValue(first_entry)
+    second_entry = m.get(analyzer["station_names"], str(lt.removeFirst(low_top)))
+    second = me.getValue(second_entry)
+    third_entry = m.get(analyzer["station_names"], str(lt.removeFirst(low_top)))
+    third = me.getValue(third_entry)
+    return first, second, third
+    
 # ==============================
 # Funciones Helper
 # ==============================
@@ -133,6 +203,25 @@ def compare_ids(id1, id2):
     if id1 == id2:
         return 0
     elif id1 > id2:
+        return 1
+    else:
+        return -1
+
+def lst_cmpfunction(station_1, station_2):
+    station_1 = int(station_1)
+    station_2 = int(station_2)
+    if station_1 == station_2:
+        return 0
+    elif station_1 > station_2:
+        return 1
+    else:
+        return -1
+
+
+def top_cmpfunction(station_1, station_2):
+    if station_1 == station_2:
+        return 0
+    elif station_1 > station_2:
         return 1
     else:
         return -1

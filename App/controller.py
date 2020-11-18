@@ -80,3 +80,9 @@ def clusters_number(analyzer):
 
 def same_cluster(sc, station_1, station_2):
     return model.same_cluster(sc, station_1, station_2)
+
+def top_stations(analyzer, selector):
+    return model.top_stations(analyzer, selector)
+
+def low_stations(analyzer):
+    return model.low_stations(analyzer)

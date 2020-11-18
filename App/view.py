@@ -79,6 +79,26 @@ def option_three():
     print("\nEl total de clusters es:", clusters_number[0])
     print("Las estaciones",same_cluster,"pertenecen al mismo cluster")
 
+def option_five():
+    top_in_stations = controller.top_stations(cont, "in")
+    top_out_stations = controller.top_stations(cont, "out")
+    lowest_stations = controller.low_stations(cont)
+    print("\nTop 3 estaciones de llegada:")
+    print(top_in_stations[0])
+    print(top_in_stations[1])
+    print(top_in_stations[2])
+    print("-------------------------------------------")
+    print("Top 3 estaciones de salida:")
+    print(top_out_stations[0])
+    print(top_out_stations[1])
+    print(top_out_stations[2])
+    print("-------------------------------------------")
+    print("Top 3 estaciones menos utilizadas:")
+    print(lowest_stations[0])
+    print(lowest_stations[1])
+    print(lowest_stations[2])
+    print("-------------------------------------------")
+
 """
 Menu principal
 """
@@ -110,7 +130,8 @@ while True:
         print("No disponible")
 
     elif int(inputs[0]) == 5:
-        print("No disponible")
+        execution_time = timeit.timeit(option_five, number=1)
+        print("Tiempo de ejecución: " + str(execution_time))
 
     elif int(inputs[0]) == 6:
         print("No disponible")
