@@ -24,6 +24,7 @@
  *
  """
 import config
+import collections
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.DataStructures import mapentry as me
@@ -43,73 +44,88 @@ de creacion y consulta sobre las estructuras de datos.
 #                       API
 # -----------------------------------------------------
 
+def newAnalyzer():
 
-def new_analyzer():
-    analyzer = {
-                "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
-                "map": m.newMap(comparefunction=compare_ids),
-                "list": lt.newList()
-                }
-    return analyzer
+    try:
+        citybike = {
+                    'stops':  m.newMap(numelements=50,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopsIds),
+                    'graph': gr.newGraph(datastructure='ADJ_LIST',
+                                              directed=True,
+                                              size=50,
+                                              comparefunction=compareStopsIds),
+                    'paths': None
+        }
+        return citybike
+    except Exception as exp:
+        error.reraise(exp, 'model:newAnalyzer')
 
-# Funciones para agregar informacion al grafo
 
-def add_trip(analyzer, trip):
-    graph = analyzer["graph"]
-    lst = analyzer["list"]
-    start_station = trip["start station id"]
-    end_station = trip["end station id"]
-    duration = int(trip["tripduration"])
-    lt.addLast(lst, trip)
-    add_station(graph, start_station)
-    add_station(graph, end_station)
-    if start_station != end_station:
-        add_link(analyzer, graph, start_station, end_station, duration)
-    return analyzer
+# Funciones para agregar informacion al grafos
 
-def add_station(graph, station_id):
-    if gr.containsVertex(graph, station_id) == False:
-        gr.insertVertex(graph, station_id)
-    return graph
+def addTrip(citybike, trip):
+    origin = trip['start station id']
+    destination = trip['end station id']
+    duration = int(trip['tripduration'])    
+    addStation(citybike, origin)
+    addStation(citybike, destination)    
+    addConnection(citybike, origin, destination, duration)
+    return citybike
 
-def add_link(analyzer, graph, start_station_id, end_station_id, duration):
-    key = start_station_id+"+"+end_station_id
-    if gr.getEdge(graph, start_station_id, end_station_id) is None:
-        gr.addEdge(graph, start_station_id, end_station_id, duration)
-        value = {"sum": duration, "trips_num": 1}
-        m.put(analyzer["map"], key, value)
-    else:
-        entry = m.get(analyzer["map"], key)
-        value = me.getValue(entry)
-        value["sum"] += duration
-        value["trips_num"] += 1
-        avg = value["sum"]/value["trips_num"]
-        gr.addEdge(graph, start_station_id, end_station_id, avg)
-        m.put(analyzer["map"], key, value)
-    return graph
+def addStation(citybike, stationid):
+    """
+    Adiciona una estación como vértice al grafo
+    """
+    try:
+        if not gr.containsVertex(citybike['graph'], stationid):
+            gr.insertVertex(citybike['graph'], stationid)
+        return citybike
+    except Exception as exp:
+        error.reraise(exp, 'model:addStation')
+
+def addConnection(citybike, origin, destination, duration):
+    """
+    Adiciona un arco entre dos estaciones
+    """
+    edge = gr.getEdge(citybike['graph'], origin, destination)
+    if edge is None:
+        gr.addEdge(citybike['graph'], origin, destination, duration)
+    return citybike
+
+def recursivo(diccionario, station):
+    return gr.adjacents(diccionario['graph'],station)
+
+def adjacentscomponents(analyzer, station1):
+    """
+    Mira cuales son los componentes conectados a la
+    estación de inicio
+
+    Args:
+        analyzer ([dict]): Datos grafo citybike
+        station1 ([str]): Estación de inicio
+    """
+    values = gr.adjacents(analyzer['graph'], station1)
+    for i in range(1,values['size']+1):
+        a = lt.getElement(gr.adjacents(analyzer['graph'], station1),i)
+   
 
 # ==============================
 # Funciones de consulta
 # ==============================
 
-def total_trips(analyzer):
-    lst = analyzer["list"]
-    return lt.size(lst)
+def totalStations(citybike):
+    return gr.numVertices(citybike['graph'])
 
-def vertex_number(analyzer):
-    graph = analyzer["graph"]
-    return gr.numVertices(graph)
+def totalConnections(citybike):
+    return gr.numEdges(citybike['graph'])
 
-def edges_number(analyzer):
-    graph = analyzer["graph"]
-    return gr.numEdges(graph)
+def numSCC(citybike):
+    citybike['graph'] = scc.KosarajuSCC(citybike['graph'])
+    return scc.connectedComponents(citybike['graph'])
 
-def clusters_number(analyzer):
-    sc = scc.KosarajuSCC(analyzer["graph"])
-    return scc.connectedComponents(sc), sc
-
-def same_cluster(sc, station_1, station_2):
-    return scc.stronglyConnected(sc, station_1, station_2)
+def sameCC(sc, station1, station2):
+    return scc.stronglyConnected(sc['graph'], station1, station2)
 
 # ==============================
 # Funciones Helper
@@ -119,22 +135,24 @@ def same_cluster(sc, station_1, station_2):
 # Funciones de Comparacion
 # ==============================
 
-def compare_stations(station_1, station_2):
-    station_1 = int(station_1)
-    station_2 = int(station_2["key"])
-    if station_1 == station_2:
-        return 0
-    elif station_1 > station_2:
-        return 1
-    else:
-        return -1 
+def compareStopsIds(stop, keyvaluestop):
 
-def compare_ids(id1, id2):
-    id2 = id2["key"]
-    if id1 == id2:
-        return 0
-    elif id1 > id2:
+    stopcode = keyvaluestop['key']
+    if (stop == stopcode):
+        return 0 
+    elif (stop > stopcode):
         return 1
     else:
         return -1
 
+
+def compareroutes(route1, route2):
+    """
+    Compara dos rutas
+    """
+    if (route1 == route2):
+        return 0
+    elif (route1 > route2):
+        return 1
+    else:
+        return -1
