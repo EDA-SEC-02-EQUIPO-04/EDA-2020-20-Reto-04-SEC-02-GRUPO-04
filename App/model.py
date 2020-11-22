@@ -31,6 +31,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dfo
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 assert config
@@ -55,7 +56,13 @@ def newAnalyzer():
                                               directed=True,
                                               size=50,
                                               comparefunction=compareStopsIds),
-                    'paths': None
+                    'routes': gr.newGraph(datastructure='ADJ_LIST',
+                                              directed=True,
+                                              size=50,
+                                              comparefunction=compareStopsIds),
+                    'prueba':  m.newMap(numelements=50,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopsIds)
         }
         return citybike
     except Exception as exp:
@@ -63,7 +70,6 @@ def newAnalyzer():
 
 
 # Funciones para agregar informacion al grafos
-
 def addTrip(citybike, trip):
     origin = trip['start station id']
     destination = trip['end station id']
@@ -99,6 +105,41 @@ def addConnection(citybike, origin, destination, duration):
         gr.addEdge(citybike['graph'], origin, destination, duration)
     return citybike
 
+
+def addTrip_routes(citybike, station, station2, time):
+    origin = station
+    destination = station2
+    originstation = list(m.get(citybike['names'],station).values())[1]
+    laststation = list(m.get(citybike['names'],station2).values())[1]
+    duration = time  
+    addStation_routes(citybike, origin, originstation)
+    addStation_routes(citybike, destination, laststation)    
+    addConnection_routes(citybike, origin, destination, duration)
+    return citybike
+
+def addStation_routes(citybike, stationid, name):
+    """
+    Adiciona una estación como vértice al grafo
+    """
+    try:
+        if not gr.containsVertex(citybike['routes'], stationid):
+            gr.insertVertex(citybike['routes'], stationid)        
+        if not m.contains(citybike['names'], name):
+            m.put(citybike['names'],stationid, name)
+        return citybike
+    except Exception as exp:
+        error.reraise(exp, 'model:addStation')
+
+
+def addConnection_routes(citybike, origin, destination, duration):
+    """
+    Adiciona un arco entre dos estaciones
+    """
+    edge = gr.getEdge(citybike['routes'], origin, destination)
+    if edge is None:
+        gr.addEdge(citybike['routes'], origin, destination, duration)
+    return citybike
+
 def adjacentscomponents(analyzer, station1, time):
     """
     Mira cuáles son los componentes conectados a la
@@ -109,23 +150,51 @@ def adjacentscomponents(analyzer, station1, time):
         station1 ([str]): Estación de inicio
     """
     values = gr.adjacents(analyzer['graph'], station1)  #Lista estaciones adyacentes
+    
     connections = lt.newList('SINGLE_LINKED')
-    for i in range(1,values['size']+1):
-        station = lt.getElement(gr.adjacents(analyzer['graph'], station1),i)   #Número estación adyacente
-        time_weight = gr.getEdge(analyzer['graph'],station1,station)['weight'] #Peso del arco 
-        adjacent_station = gr.adjacents(analyzer['graph'],station) 
-        if adjacent_station['size'] == 0 and time_weight<= int(time):
-            save = (station, time_weight,list(m.get(analyzer['names'],station).values())[1])
-            lt.addLast(connections, save)
-        # if  time_weight <= int(time):               #Comparación tiempos
-        #     if adjacent_station['size'] != 0:
-        #         print(station+' h1')
-        #         adjacent_station = gr.adjacents(analyzer['graph'],station)
-        #         print(adjacent_station)
-        #         print(gr.getEdge(analyzer['graph'],station1, station))
-        #         adjacentscomponents(analyzer, station, time)      
-    print((connections))
-    return connections
+    if values['size'] == 0:
+        print('\nLa para que selecciono no tiene estaciones adyacentes, pruebe con otra ruta')
+    else:
+        for i in range(1,values['size']+1):
+            station = lt.getElement(gr.adjacents(analyzer['graph'], station1),i)   #Número estación adyacente
+            time_weight = gr.getEdge(analyzer['graph'],station1,station)['weight'] #Peso del arco 
+            adjacent_station = gr.adjacents(analyzer['graph'],station) 
+            print(adjacent_station)
+            if adjacent_station['size'] == 0 and time_weight<= time:           
+                save = (station, time_weight, list(m.get(analyzer['names'],station).values())[1])
+                lt.addLast(connections, save)            
+                addTrip_routes(analyzer,station1, station, time_weight)            
+            elif adjacent_station['size'] != 0:  
+                for j in range(1,values['size']+1):
+                    stationc = lt.getElement(gr.adjacents(analyzer['graph'], station1),j)
+                    if stationc == station:
+                        None
+                    else:
+                        stationsrecursive(analyzer, station, stationc, time)
+        return connections
+    
+def stationsrecursive(analyzer, station, stationc, time):
+    adjacent_station = gr.adjacents(analyzer['graph'], stationc)
+    print(stationc)
+    time_u = time 
+    if adjacent_station['size'] == 0:     
+        x = gr.getEdge(analyzer['graph'],station,stationc)['weight']
+        time_u += x
+        if time_u <= time:
+            addTrip_routes(analyzer,station, stationc, x)
+            time_u = time
+        else:
+            time_u = time
+            None
+    else:
+        time_u = time
+        for j in range(1,adjacent_station['size']+1):
+                stationc = lt.getElement(gr.adjacents(analyzer['graph'], station),j)
+                adjacent_station = gr.adjacents(analyzer['graph'],station) 
+                print(adjacent_station)
+                print(stationc)
+                x = gr.getEdge(analyzer['graph'],station,stationc)['weight']
+                stationsrecursive(analyzer, station, stationc, time)
         
 
         

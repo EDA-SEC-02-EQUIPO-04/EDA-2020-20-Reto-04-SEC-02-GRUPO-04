@@ -96,7 +96,7 @@ def optionThree():
 
 def optionFour():
     station = input('Estación de la que parte: ')
-    time = input('Tiempo de resistencia: ')
+    time = int(input('Tiempo de resistencia: '))
     controller.adjacentsvertex(cont,station, time)
 
 def optionFive():
