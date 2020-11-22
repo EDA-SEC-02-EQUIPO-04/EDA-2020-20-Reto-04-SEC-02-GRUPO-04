@@ -44,7 +44,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-bikefile = '201801-1-citibike-tripdata - copia.csv'
+bikefile = '201801-1-citibike-tripdata.csv'
 initialstation = None
 RecursionLimit = 20000
 
@@ -96,7 +96,8 @@ def optionThree():
 
 def optionFour():
     station = input('Estación de la que parte: ')
-    controller.adjacentsvertex(cont,station)
+    time = input('Tiempo de resistencia: ')
+    controller.adjacentsvertex(cont,station, time)
 
 def optionFive():
     None

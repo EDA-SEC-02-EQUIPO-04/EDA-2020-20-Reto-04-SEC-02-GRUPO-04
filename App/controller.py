@@ -88,5 +88,5 @@ def sameComponent(citybike, s1, s2):
     """
     return model.sameCC(citybike, s1, s2)
 
-def adjacentsvertex(citybike, station):
-    model.adjacentscomponents(citybike,station)
+def adjacentsvertex(citybike, station, time):
+    model.adjacentscomponents(citybike,station, time)

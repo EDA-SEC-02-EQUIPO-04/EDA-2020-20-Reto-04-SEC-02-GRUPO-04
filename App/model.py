@@ -48,7 +48,7 @@ def newAnalyzer():
 
     try:
         citybike = {
-                    'stops':  m.newMap(numelements=50,
+                    'names':  m.newMap(numelements=50,
                                      maptype='PROBING',
                                      comparefunction=compareStopsIds),
                     'graph': gr.newGraph(datastructure='ADJ_LIST',
@@ -67,22 +67,28 @@ def newAnalyzer():
 def addTrip(citybike, trip):
     origin = trip['start station id']
     destination = trip['end station id']
+    originstation = trip['start station name']
+    laststation = trip['end station name']
     duration = int(trip['tripduration'])    
-    addStation(citybike, origin)
-    addStation(citybike, destination)    
+    addStation(citybike, origin, originstation)
+    addStation(citybike, destination, laststation)    
     addConnection(citybike, origin, destination, duration)
     return citybike
 
-def addStation(citybike, stationid):
+def addStation(citybike, stationid, name):
     """
     Adiciona una estación como vértice al grafo
     """
     try:
         if not gr.containsVertex(citybike['graph'], stationid):
             gr.insertVertex(citybike['graph'], stationid)
+        if not m.contains(citybike['names'], name):
+            m.put(citybike['names'],stationid, name)
         return citybike
+
     except Exception as exp:
         error.reraise(exp, 'model:addStation')
+
 
 def addConnection(citybike, origin, destination, duration):
     """
@@ -93,21 +99,38 @@ def addConnection(citybike, origin, destination, duration):
         gr.addEdge(citybike['graph'], origin, destination, duration)
     return citybike
 
-def recursivo(diccionario, station):
-    return gr.adjacents(diccionario['graph'],station)
-
-def adjacentscomponents(analyzer, station1):
+def adjacentscomponents(analyzer, station1, time):
     """
-    Mira cuales son los componentes conectados a la
+    Mira cuáles son los componentes conectados a la
     estación de inicio
 
     Args:
         analyzer ([dict]): Datos grafo citybike
         station1 ([str]): Estación de inicio
     """
-    values = gr.adjacents(analyzer['graph'], station1)
+    values = gr.adjacents(analyzer['graph'], station1)  #Lista estaciones adyacentes
+    connections = lt.newList('SINGLE_LINKED')
     for i in range(1,values['size']+1):
-        a = lt.getElement(gr.adjacents(analyzer['graph'], station1),i)
+        station = lt.getElement(gr.adjacents(analyzer['graph'], station1),i)   #Número estación adyacente
+        time_weight = gr.getEdge(analyzer['graph'],station1,station)['weight'] #Peso del arco 
+        adjacent_station = gr.adjacents(analyzer['graph'],station) 
+        if adjacent_station['size'] == 0 and time_weight<= int(time):
+            save = (station, time_weight,list(m.get(analyzer['names'],station).values())[1])
+            lt.addLast(connections, save)
+        # if  time_weight <= int(time):               #Comparación tiempos
+        #     if adjacent_station['size'] != 0:
+        #         print(station+' h1')
+        #         adjacent_station = gr.adjacents(analyzer['graph'],station)
+        #         print(adjacent_station)
+        #         print(gr.getEdge(analyzer['graph'],station1, station))
+        #         adjacentscomponents(analyzer, station, time)      
+    print((connections))
+    return connections
+        
+
+        
+        
+
    
 
 # ==============================
@@ -146,13 +169,13 @@ def compareStopsIds(stop, keyvaluestop):
         return -1
 
 
-def compareroutes(route1, route2):
+def comparevertex(vertex1, vertex2):
     """
-    Compara dos rutas
+    Compara dos vertices
     """
-    if (route1 == route2):
+    if (vertex1 == vertex2):
         return 0
-    elif (route1 > route2):
+    elif (vertex1 > vertex2):
         return 1
     else:
         return -1
