@@ -98,8 +98,7 @@ def optionFour():
     time = int(input('Tiempo de resistencia: '))
     controller.adjacentsvertex(cont,station, time)
 
-def optionFive():
-    
+def optionFive():    
     print('1. 0 - 10')
     print('2. 11 - 20')
     print('3. 21 - 30')
@@ -108,7 +107,7 @@ def optionFive():
     print('6. 51 - 60')
     print('7. 60+')    
     agerange = int(input('Seleccione un rango de edad: '))
-    controller.agetrips(bikefile, agerange)
+    controller.agetrips(cont, agerange)
 
 def optionSix():
     None

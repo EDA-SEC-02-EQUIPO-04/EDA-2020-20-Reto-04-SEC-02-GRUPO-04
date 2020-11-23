@@ -62,7 +62,12 @@ def newAnalyzer():
                                               comparefunction=compareStopsIds),
                     'trips':  m.newMap(numelements=50,
                                      maptype='PROBING',
-                                     comparefunction=compareStopsIds)
+                                     comparefunction=compareStopsIds),
+                    'ranges':  m.newMap(numelements=50,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopsIds),
+                    
+
         }
         return citybike
     except Exception as exp:
@@ -221,6 +226,36 @@ def newage(year):
               }
     return p_year
 
+def agesranges(ages):
+    """
+    Crea una estructura para modelar los rangos de las rutas según la 
+    edad
+
+    Args:
+        age(str): Edad de la persona 
+    return:
+        Diccionario del rango de años correspondiente con sus estaciones de
+        entrada y salida 
+    """
+
+    ranges = {'0-10': {'Initial': lt.newList('SINGLE_INKED'), 
+                        'Final': lt.newList('SINGLE_INKED')},
+              '11-20': {'Initial': lt.newList('SINGLE_INKED'), 
+                        'Final': lt.newList('SINGLE_INKED')},
+              '21-30':{'Initial': lt.newList('SINGLE_INKED'), 
+                        'Final': lt.newList('SINGLE_INKED')},
+              '31-40':{'Initial': lt.newList('SINGLE_INKED'), 
+                        'Final': lt.newList('SINGLE_INKED')},
+              '41-50':{'Initial': lt.newList('SINGLE_INKED'), 
+                        'Final': lt.newList('SINGLE_INKED')},
+              '51-60':{'Initial': lt.newList('SINGLE_INKED'), 
+                        'Final': lt.newList('SINGLE_INKED')},
+              '60+':{'Initial': lt.newList('SINGLE_INKED'), 
+                        'Final': lt.newList('SINGLE_INKED')}
+              }
+    return ranges
+
+
 def addyear(analyzer, year, route_id, initialroute_name, finalroute_name):
     years = analyzer['trips']
     existyear = m.contains(years, year)
@@ -234,16 +269,26 @@ def addyear(analyzer, year, route_id, initialroute_name, finalroute_name):
     lt.addLast(yearr['initialroute_id'], (route_id['start station id'],initialroute_name))
     lt.addLast(yearr['finalroute_id'], (route_id['end station id'],finalroute_name))
 
-def getagetrips(tripfile, agerange):
+def agetrips(data_age, agerage):
+    ranges = data_age['range']
+    ages = data_age['trips'])
+    age_data = data_age['trips']
+    stations = data_age['trips']
+    iterator = it.newIterator(ages)
 
-    if agerange == 1:    
+    while it.hasNext(iterator):          
+        age = it.next(iterator)
+        if 21<= int(age) <= 30:
+            range_i = agesranges('0-10')
+            m.put(ranges, range_i, ages)
+            print('hola')
+            lt.addLast(ranges['Initial'], stations['initialroute_id'])
+            lt.addLast(ranges['Final'], stations['finalroute_id'])
+            print(ranges)
+
+    # for i in range(0,age['size']):
         
-    elif agerange == 2:
-    elif agerange == 3:
-    elif agerange == 4:
-    elif agerange == 5:
-    elif agerange == 6:
-    elif agerange == 7:
+            
 
 
 
