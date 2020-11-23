@@ -44,7 +44,7 @@ operación seleccionada.
 # ___________________________________________________
 
 
-bikefile = '201801-1-citibike-tripdata.csv'
+bikefile = '201801-1-citibike-tripdata - copia.csv'
 initialstation = None
 RecursionLimit = 20000
 
@@ -70,8 +70,9 @@ def printMenu():
     print('-----------------------------------------------')
 
 def optiontwo():
+    year = int(input('Año actual: '))
     print('\nCargando información rutas City Bike ....')
-    controller.loadFile(cont,bikefile)
+    controller.loadFile(cont, bikefile, year)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalStations(cont)
     print('Número de vertices: ' + str(numvertex))
@@ -80,8 +81,6 @@ def optiontwo():
     sys.setrecursionlimit(RecursionLimit)
     print('El límite de recursión se ajusta a: ' + str(RecursionLimit))
    
-
-
 def optionThree():
     firts_station = input('\nID primera estación: ')
     second_station = input('ID segunda estación: ')
@@ -100,7 +99,16 @@ def optionFour():
     controller.adjacentsvertex(cont,station, time)
 
 def optionFive():
-    None
+    
+    print('1. 0 - 10')
+    print('2. 11 - 20')
+    print('3. 21 - 30')
+    print('4. 31 - 40')
+    print('5. 41 - 50')
+    print('6. 51 - 60')
+    print('7. 60+')    
+    agerange = int(input('Seleccione un rango de edad: '))
+    controller.agetrips(bikefile, agerange)
 
 def optionSix():
     None

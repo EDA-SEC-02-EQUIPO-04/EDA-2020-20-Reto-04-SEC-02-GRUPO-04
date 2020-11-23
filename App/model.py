@@ -60,7 +60,7 @@ def newAnalyzer():
                                               directed=True,
                                               size=50,
                                               comparefunction=compareStopsIds),
-                    'prueba':  m.newMap(numelements=50,
+                    'trips':  m.newMap(numelements=50,
                                      maptype='PROBING',
                                      comparefunction=compareStopsIds)
         }
@@ -68,14 +68,15 @@ def newAnalyzer():
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 
-
 # Funciones para agregar informacion al grafos
+
 def addTrip(citybike, trip):
     origin = trip['start station id']
     destination = trip['end station id']
     originstation = trip['start station name']
     laststation = trip['end station name']
     duration = int(trip['tripduration'])    
+    year = int(trip['birth year'])
     addStation(citybike, origin, originstation)
     addStation(citybike, destination, laststation)    
     addConnection(citybike, origin, destination, duration)
@@ -87,11 +88,10 @@ def addStation(citybike, stationid, name):
     """
     try:
         if not gr.containsVertex(citybike['graph'], stationid):
-            gr.insertVertex(citybike['graph'], stationid)
+            gr.insertVertex(citybike['graph'], stationid)            
         if not m.contains(citybike['names'], name):
             m.put(citybike['names'],stationid, name)
         return citybike
-
     except Exception as exp:
         error.reraise(exp, 'model:addStation')
 
@@ -140,6 +140,8 @@ def addConnection_routes(citybike, origin, destination, duration):
         gr.addEdge(citybike['routes'], origin, destination, duration)
     return citybike
 
+#Requerimiento 4
+
 def adjacentscomponents(analyzer, station1, time):
     """
     Mira cuáles son los componentes conectados a la
@@ -159,11 +161,10 @@ def adjacentscomponents(analyzer, station1, time):
             station = lt.getElement(gr.adjacents(analyzer['graph'], station1),i)   #Número estación adyacente
             time_weight = gr.getEdge(analyzer['graph'],station1,station)['weight'] #Peso del arco 
             adjacent_station = gr.adjacents(analyzer['graph'],station) 
-            print(adjacent_station)
             if adjacent_station['size'] == 0 and time_weight<= time:           
                 save = (station, time_weight, list(m.get(analyzer['names'],station).values())[1])
                 lt.addLast(connections, save)            
-                addTrip_routes(analyzer,station1, station, time_weight)            
+                addTrip_routes(analyzer,station1, station, time_weight)  
             elif adjacent_station['size'] != 0:  
                 for j in range(1,values['size']+1):
                     stationc = lt.getElement(gr.adjacents(analyzer['graph'], station1),j)
@@ -171,15 +172,19 @@ def adjacentscomponents(analyzer, station1, time):
                         None
                     else:
                         stationsrecursive(analyzer, station, stationc, time)
-        return connections
+    return connections
     
 def stationsrecursive(analyzer, station, stationc, time):
     adjacent_station = gr.adjacents(analyzer['graph'], stationc)
-    print(stationc)
     time_u = time 
-    if adjacent_station['size'] == 0:     
-        x = gr.getEdge(analyzer['graph'],station,stationc)['weight']
+    if adjacent_station['size'] == 0:    
+        print(str(stationc)+'s') 
+        print(type(station))
+        print(type(stationc))
+        x = gr.getEdge(analyzer['graph'],station,stationc)['weight']        
+        print(x)
         time_u += x
+        print(time_u)
         if time_u <= time:
             addTrip_routes(analyzer,station, stationc, x)
             time_u = time
@@ -187,20 +192,61 @@ def stationsrecursive(analyzer, station, stationc, time):
             time_u = time
             None
     else:
-        time_u = time
         for j in range(1,adjacent_station['size']+1):
                 stationc = lt.getElement(gr.adjacents(analyzer['graph'], station),j)
                 adjacent_station = gr.adjacents(analyzer['graph'],station) 
-                print(adjacent_station)
+                
                 print(stationc)
+                print(adjacent_station)
                 x = gr.getEdge(analyzer['graph'],station,stationc)['weight']
                 stationsrecursive(analyzer, station, stationc, time)
-        
 
-        
-        
+#Requerimiento 5 
 
-   
+def newage(year):
+    """
+    Crea una estructura para modelar los id de las rutas según la 
+    edad
+
+    Args:
+        year(str): Rango de años en que nació la persona 
+    return:
+        Diccionario del año correspondiente con sus estaciones de
+        entrada y salida 
+    """
+
+    p_year = {'year': year,
+              'initialroute_id': lt.newList('SINGLE_LINKED', compareStopsIds),
+              'finalroute_id': lt.newList('SINGLE_LINKED', compareStopsIds)
+              }
+    return p_year
+
+def addyear(analyzer, year, route_id, initialroute_name, finalroute_name):
+    years = analyzer['trips']
+    existyear = m.contains(years, year)
+    
+    if existyear:
+        entry = m.get(years, year)
+        yearr = me.getValue(entry)
+    else:
+        yearr = newage(year)
+        m.put(years, year, yearr)
+    lt.addLast(yearr['initialroute_id'], (route_id['start station id'],initialroute_name))
+    lt.addLast(yearr['finalroute_id'], (route_id['end station id'],finalroute_name))
+
+def getagetrips(tripfile, agerange):
+
+    if agerange == 1:    
+        
+    elif agerange == 2:
+    elif agerange == 3:
+    elif agerange == 4:
+    elif agerange == 5:
+    elif agerange == 6:
+    elif agerange == 7:
+
+
+
 
 # ==============================
 # Funciones de consulta

@@ -50,15 +50,17 @@ def init():
 # #  de datos en los modelos
 # # ___________________________________________________
 
-
-
-def loadFile(citybike, tripfile):
+def loadFile(citybike, tripfile, year):
     tripfile = cf.data_dir + tripfile
     input_file = csv.DictReader(open(tripfile, encoding= 'utf-8'), delimiter = ',')
     for trip in input_file:
         model.addTrip(citybike,trip)
+        years_i =trip['birth year'].split(',')
+        initialroute_name = trip['start station name'].split(',')
+        finalroute_name = trip['end station name'].split(',')
+        for years in years_i:
+            model.addyear(citybike, year - int(years.lower()), trip,initialroute_name, finalroute_name)
     return citybike
-
 
 def loadTrips(citybike):
     for filename in os.listdir(cf.data_dir):
@@ -90,3 +92,6 @@ def sameComponent(citybike, s1, s2):
 
 def adjacentsvertex(citybike, station, time):
     model.adjacentscomponents(citybike,station, time)
+
+def agetrips(analyzer, agerange):
+    model.agetrips(analyzer,agerange)
