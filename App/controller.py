@@ -90,8 +90,32 @@ def sameComponent(citybike, s1, s2):
     """
     return model.sameCC(citybike, s1, s2)
 
+def adjacents(analyzer, vertex):
+    model.adjacents(analyzer, vertex)
+
 def adjacentsvertex(citybike, station, time):
-    model.adjacentscomponents(citybike,station, time)
+    return model.adjacentscomponents(citybike,station, time)
 
 def agesroutes(analyzer, agerange):
-    model.agesroutes(analyzer, agerange)
+    return model.agesroutes(analyzer, agerange)
+
+def minimumCostPaths(analyzer, initialStation):
+    """
+    Calcula todos los caminos de costo minimo de initialStation a todas
+    las otras estaciones del sistema
+    """
+    return model.minimumCostPaths(analyzer, initialStation)
+
+
+def hasPath(analyzer, destStation):
+    """
+    Informa si existe un camino entre initialStation y destStation
+    """
+    return model.hasPath(analyzer, destStation)
+
+
+def minimumCostPath(analyzer, destStation):
+    """
+    Retorna el camino de costo minimo desde initialStation a destStation
+    """
+    return model.minimumCostPath(analyzer, destStation)

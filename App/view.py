@@ -107,7 +107,25 @@ def optionFive():
     print('6. 51 - 60')
     print('7. 60+')    
     agerange = int(input('Seleccione un rango de edad: '))
-    controller.agesroutes(cont, agerange)
+    initial, final, name_ini, name_fin = controller.agesroutes(cont, agerange)
+    controller.minimumCostPaths(cont, initial)
+    controller.adjacents(cont, initial)
+    controller.adjacentsvertex
+    haspath = controller.hasPath(cont, final)
+    print('Hay camino entre la estación base : ' +
+          'y la estación: ' + final + ': ')
+    print(haspath)
+    path = controller.minimumCostPath(cont, final)
+    if path is not None:
+        pathlen = stack.size(path)
+        print('El camino es de longitud: ' + str(pathlen))
+        while (not stack.isEmpty(path)):
+            stop = stack.pop(path)
+            print(stop)
+            print('Parte de la ruta '+ name_ini+' para llegar a '+name_fin)
+    else:
+        print('No hay camino')
+
 
 def optionSix():
     None

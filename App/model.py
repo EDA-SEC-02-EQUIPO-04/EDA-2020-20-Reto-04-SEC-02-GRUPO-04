@@ -36,6 +36,7 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 assert config
 from DISClib.Algorithms.Graphs import scc
+from collections import Counter
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -63,9 +64,7 @@ def newAnalyzer():
                     'trips':  m.newMap(numelements=50,
                                      maptype='PROBING',
                                      comparefunction=compareStopsIds),
-                    'ranges':  m.newMap(numelements=50,
-                                     maptype='PROBING',
-                                     comparefunction=compareStopsIds),
+                    'paths':  None
                     
 
         }
@@ -80,8 +79,7 @@ def addTrip(citybike, trip):
     destination = trip['end station id']
     originstation = trip['start station name']
     laststation = trip['end station name']
-    duration = int(trip['tripduration'])    
-    year = int(trip['birth year'])
+    duration = int(trip['tripduration'])  
     addStation(citybike, origin, originstation)
     addStation(citybike, destination, laststation)    
     addConnection(citybike, origin, destination, duration)
@@ -144,6 +142,9 @@ def addConnection_routes(citybike, origin, destination, duration):
     if edge is None:
         gr.addEdge(citybike['routes'], origin, destination, duration)
     return citybike
+
+def adjacents(analyzer, vertex):
+    gr.adjacents(analyzer['graph'],vertex)
 
 #Requerimiento 4
 
@@ -240,6 +241,12 @@ def addyear(analyzer, year, route_id, initialroute_name, finalroute_name):
     lt.addLast(yearr['initialroute_id'], route_id['start station id'])
     lt.addLast(yearr['finalroute_id'], route_id['end station id'])
 
+def iterartion(data):
+    iterator= it.newIterator(data) 
+    while it.hasNext(iterator):
+        station = it.next(iterator)
+        return station
+
 def agesroutes(analyzer, agerange):
     ages = analyzer['trips']
     ages_k = m.keySet(analyzer['trips'])
@@ -285,7 +292,7 @@ def agesroutes(analyzer, agerange):
                 L.append(b)
                 M.append(c)
             else: 
-                None
+                None        
     elif agerange == 5:
         while it.hasNext(iterator):
             age_k = it.next(iterator)
@@ -318,17 +325,12 @@ def agesroutes(analyzer, agerange):
                 None
     else:
         None
-    return L,M
-        
-            
-def iterartion(data):
-    iterator= it.newIterator(data) 
-    while it.hasNext(iterator):
-        station = it.next(iterator)
-        return station
-
-
-
+    inistation = Counter(L).most_common()[0][0]    #Estación de salida
+    finalstation = Counter(M).most_common()[0][0]  #Estación de llegada 
+    name_ini = list(m.get(analyzer['names'],inistation).values())[1]
+    name_fin = list(m.get(analyzer['names'], finalstation).values())[1]
+    return str(inistation),str(finalstation), name_ini, name_fin
+    
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -345,6 +347,30 @@ def numSCC(citybike):
 
 def sameCC(sc, station1, station2):
     return scc.stronglyConnected(sc['graph'], station1, station2)
+
+def minimumCostPaths(analyzer,initialStation):
+    """
+    Calcula los caminos de costo mínimo desde la estacion initialStation
+    a todos los demas vertices del grafo
+    """
+    analyzer['paths'] = djk.Dijkstra(analyzer['graph'], initialStation)
+    return analyzer
+
+def hasPath(analyzer,destStation):
+    """
+    Indica si existe un camino desde la estacion inicial a la estación destino
+    Se debe ejecutar primero la funcion minimumCostPaths
+    """
+    return djk.hasPathTo(analyzer['paths'], destStation)
+
+def minimumCostPath(analyzer, destStation):
+    """
+    Retorna el camino de costo minimo entre la estacion de inicio
+    y la estacion destino
+    Se debe ejecutar primero la funcion minimumCostPaths
+    """
+    path = djk.pathTo(analyzer['paths'], destStation)
+    return path
 
 # ==============================
 # Funciones Helper
