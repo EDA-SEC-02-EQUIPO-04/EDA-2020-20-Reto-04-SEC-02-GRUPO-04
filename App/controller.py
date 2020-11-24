@@ -42,99 +42,90 @@ recae sobre el controlador.
 #  Inicializacion del catalogo
 # ___________________________________________________
 
-
-def init_analyzer():
-    return model.new_analyzer()
-
+def init():
+    analyzer = model.newAnalyzer()
+    return analyzer
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
 
-
-def load_trips(analyzer):
-    for filename in os.listdir(cf.data_dir):
-        if filename.endswith(".csv"):
-            print("Cargando archivo: " + filename)
-            load_file(analyzer, filename)
-    return analyzer
-
-
-def load_file(analyzer, file):
-    file = cf.data_dir + file
-    input_file = csv.DictReader(open(file, encoding="utf-8"), delimiter=",")
+def loadFile(citybike, tripfile, year):
+    tripfile = cf.data_dir + tripfile
+    input_file = csv.DictReader(open(tripfile, encoding= 'utf-8'), delimiter = ',')
     for trip in input_file:
-        model.add_trip(analyzer, trip)
-    return analyzer
+        model.addTrip(citybike,trip)
+        years_i =trip['birth year'].split(',')
+        initialroute_name = trip['start station name'].split(',')
+        finalroute_name = trip['end station name'].split(',')
+        for years in years_i:
+            model.addyear(citybike, year - int(years.lower()), trip,initialroute_name, finalroute_name)
+    return citybike
 
+def loadTrips(citybike):
+    for filename in os.listdir(cf.data_dir):
+        if filename.endswith('.csv'):
+            print('Cargando archivo: ' + filename)
+            loadFile(citybike, filename)
+    return citybike
 
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
 
-def total_trips(analyzer):
-    return model.total_trips(analyzer)
+def totalStations(citybike):
+    return model.totalStations(citybike)
 
+def totalConnections(citybike):
+    return model.totalConnections(citybike)
 
-def vertex_number(analyzer):
-    return model.vertex_number(analyzer)
+def connectedComponents(citybike):
+    """
+    Número de componentes fuertemente conectados
+    """
+    return model.numSCC(citybike)
 
+def sameComponent(citybike, s1, s2):
+    """
+    Informa si las estaciones están en el mismo componente
+    """
+    return model.sameCC(citybike, s1, s2)
 
-def edges_number(analyzer):
-    return model.edges_number(analyzer)
+def adjacents(analyzer, vertex):
+    model.adjacents(analyzer, vertex)
 
+def adjacentsvertex(citybike, station, time):
+    return model.adjacentscomponents(citybike,station, time)
 
-def clusters_number(analyzer):
-    return model.clusters_number(analyzer)
-
-
-def same_cluster(sc, station_1, station_2):
-    return model.same_cluster(sc, station_1, station_2)
 
 def top_stations(analyzer, selector):
     return model.top_stations(analyzer, selector)
 
 def low_stations(analyzer):
     return model.low_stations(analyzer)
-# Opcion 2
-
-# def init():
-#     analyzer = model.newAnalyzer()
-#     return analyzer
-
-# def loadFile(citibike, tripfile):
-#     tripfile = cf.data_dir + tripfile
-#     input_file = csv.DictReader(open(tripfile, encoding= 'utf-8'), delimiter = ',')
-#     for trip in input_file:
-#         model.addTrip(citibike,trip)
-#     return citibike
 
 
-# def loadTrips(citibike):
-#     for filename in os.listdir(cf.data_dir):
-#         if filename.endswith('.csv'):
-#             print('Cargando archivo: ' + filename)
-#             loadFile(citibike, filename)
-#     return citibike
-# # ___________________________________________________
-# #  Funciones para consultas
-# # ___________________________________________________
+def agesroutes(analyzer, agerange):
+    return model.agesroutes(analyzer, agerange)
 
-# def totalStations(citibike):
-#     return model.totalStations(citibike)
+def minimumCostPaths(analyzer, initialStation):
+    """
+    Calcula todos los caminos de costo minimo de initialStation a todas
+    las otras estaciones del sistema
+    """
+    return model.minimumCostPaths(analyzer, initialStation)
 
-# def totalConnections(citibike):
-#     return model.totalConnections(citibike)
 
-# def connectedComponents(citibike):
-#     """
-#     Número de componentes fuertemente conectados
-#     """
-#     return model.numSCC(citibike)
+def hasPath(analyzer, destStation):
+    """
+    Informa si existe un camino entre initialStation y destStation
+    """
+    return model.hasPath(analyzer, destStation)
 
-# def sameComponent(citibike, s1, s2):
-#     """
-#     Informa si las estaciones están en el mismo componente
-#     """
-#     return model.sameCC(citibike, s1, s2)
+
+def minimumCostPath(analyzer, destStation):
+    """
+    Retorna el camino de costo minimo desde initialStation a destStation
+    """
+    return model.minimumCostPath(analyzer, destStation)
