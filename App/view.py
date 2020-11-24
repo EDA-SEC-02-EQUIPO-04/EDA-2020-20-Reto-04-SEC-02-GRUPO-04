@@ -107,7 +107,7 @@ def optionFive():
     print('6. 51 - 60')
     print('7. 60+')    
     agerange = int(input('Seleccione un rango de edad: '))
-    controller.agetrips(cont, agerange)
+    controller.agesroutes(cont, agerange)
 
 def optionSix():
     None

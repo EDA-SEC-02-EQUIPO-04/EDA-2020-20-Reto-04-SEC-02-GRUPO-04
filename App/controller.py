@@ -93,5 +93,5 @@ def sameComponent(citybike, s1, s2):
 def adjacentsvertex(citybike, station, time):
     model.adjacentscomponents(citybike,station, time)
 
-def agetrips(analyzer, agerange):
-    model.agetrips(analyzer,agerange)
+def agesroutes(analyzer, agerange):
+    model.agesroutes(analyzer, agerange)
