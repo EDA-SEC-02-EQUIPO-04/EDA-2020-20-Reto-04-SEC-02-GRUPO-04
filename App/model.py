@@ -325,11 +325,20 @@ def agesroutes(analyzer, agerange):
                 None
     else:
         None
-    inistation = Counter(L).most_common()[0][0]    #Estación de salida
-    finalstation = Counter(M).most_common()[0][0]  #Estación de llegada 
-    name_ini = list(m.get(analyzer['names'],inistation).values())[1]
-    name_fin = list(m.get(analyzer['names'], finalstation).values())[1]
-    return str(inistation),str(finalstation), name_ini, name_fin
+    if L != []:
+        inistation = Counter(L).most_common()[0][0]    #Estación de salida
+        name_ini = list(m.get(analyzer['names'],inistation).values())[1]
+    else:
+        inistation = None
+        name_ini = None
+    if M != []:
+        finalstation = Counter(M).most_common()[0][0]  #Estación de llegada 
+        name_fin = list(m.get(analyzer['names'], finalstation).values())[1]
+    else:
+        finalstation = None
+        name_fin = None          
+    
+    return inistation,finalstation, name_ini, name_fin
     
 # ==============================
 # Funciones de consulta
