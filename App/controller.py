@@ -37,6 +37,7 @@ del modelo en una sola respuesta.  Esta responsabilidad
 recae sobre el controlador.
 """
 
+
 # ___________________________________________________
 #  Inicializacion del catalogo
 # ___________________________________________________
@@ -45,10 +46,10 @@ def init():
     analyzer = model.newAnalyzer()
     return analyzer
 
-# # ___________________________________________________
-# #  Funciones para la carga de datos y almacenamiento
-# #  de datos en los modelos
-# # ___________________________________________________
+# ___________________________________________________
+#  Funciones para la carga de datos y almacenamiento
+#  de datos en los modelos
+# ___________________________________________________
 
 def loadFile(citybike, tripfile, year):
     tripfile = cf.data_dir + tripfile
@@ -68,6 +69,7 @@ def loadTrips(citybike):
             print('Cargando archivo: ' + filename)
             loadFile(citybike, filename)
     return citybike
+
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
@@ -95,6 +97,14 @@ def adjacents(analyzer, vertex):
 
 def adjacentsvertex(citybike, station, time):
     return model.adjacentscomponents(citybike,station, time)
+
+
+def top_stations(analyzer, selector):
+    return model.top_stations(analyzer, selector)
+
+def low_stations(analyzer):
+    return model.low_stations(analyzer)
+
 
 def agesroutes(analyzer, agerange):
     return model.agesroutes(analyzer, agerange)

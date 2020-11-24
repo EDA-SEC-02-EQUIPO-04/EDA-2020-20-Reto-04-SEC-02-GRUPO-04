@@ -22,14 +22,14 @@
  *
  * Dario Correal
  *
- """
-
+"""
 
 import sys
 import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
+
 assert config
 
 """
@@ -39,9 +39,11 @@ hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
 
+
 # ___________________________________________________
-#  Variables
+#  Variables.
 # ___________________________________________________
+
 
 
 bikefile = '201801-1-citibike-tripdata.csv'
@@ -49,9 +51,8 @@ initialstation = None
 RecursionLimit = 20000
 
 # ___________________________________________________
-#  Menu principal
+#  Menu principal.
 # ___________________________________________________
-
 
 def printMenu():
     print('\n')
@@ -92,13 +93,32 @@ def optionThree():
     else:
         print('Las estaciones ' + firts_station  +' y ' + second_station + ' no pertenecen al mismo cluster')
 
-
-def optionFour():
+def option_five():
+    top_in_stations = controller.top_stations(cont, "in")
+    top_out_stations = controller.top_stations(cont, "out")
+    lowest_stations = controller.low_stations(cont)
+    print("\nTop 3 estaciones de llegada:")
+    print(top_in_stations[0])
+    print(top_in_stations[1])
+    print(top_in_stations[2])
+    print("-------------------------------------------")
+    print("Top 3 estaciones de salida:")
+    print(top_out_stations[0])
+    print(top_out_stations[1])
+    print(top_out_stations[2])
+    print("-------------------------------------------")
+    print("Top 3 estaciones menos utilizadas:")
+    print(lowest_stations[0])
+    print(lowest_stations[1])
+    print(lowest_stations[2])
+    print("-------------------------------------------")
+    
+def optionSix():
     station = input('Estación de la que parte: ')
     time = int(input('Tiempo de resistencia: '))
     controller.adjacentsvertex(cont,station, time)
 
-def optionFive():    
+def optionSeven():    
     print('1. 0 - 10')
     print('2. 11 - 20')
     print('3. 21 - 30')
@@ -129,12 +149,6 @@ def optionFive():
         else:
             print('No hay camino')
 
-def optionSix():
-    None
-
-def optionSeven():
-    None
-
 def optionEight():
     None
 
@@ -149,6 +163,7 @@ def optionTen():
 Menu principal
 """
 while True:
+
     printMenu()
     inputs = input('Seleccione una opción para continuar \n')
 
@@ -162,7 +177,8 @@ while True:
     elif int(inputs[0]) == 4:
         optionFour()
     elif int(inputs[0]) == 5:
-        optionFive()
+        execution_time = timeit.timeit(option_five, number=1)
+        print("Tiempo de ejecución: " + str(execution_time))
     elif int(inputs[0]) == 6:
         optionSix()
     elif int(inputs[0]) == 7:
