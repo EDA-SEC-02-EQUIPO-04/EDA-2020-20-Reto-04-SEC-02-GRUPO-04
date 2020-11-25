@@ -164,7 +164,7 @@ def adjacentscomponents(analyzer, station1, time):
     
     connections = lt.newList('SINGLE_LINKED')
     if values['size'] == 0:
-        print('\nLa para que selecciono no tiene estaciones adyacentes, pruebe con otra ruta')
+        print('\nLa ruta que selecciono no tiene estaciones adyacentes, pruebe con otra')
     else:
         for i in range(1,values['size']+1):
             station = lt.getElement(gr.adjacents(analyzer['graph'], station1),i)   #Número estación adyacente
@@ -209,6 +209,41 @@ def stationsrecursive(analyzer, station, stationc, time):
                 print(adjacent_station)
                 x = gr.getEdge(analyzer['graph'],station,stationc)['weight']
                 stationsrecursive(analyzer, station, stationc, time)
+
+#Requerimiento 4 #2 
+
+def adyacentes(analyzer, station, time:int):
+    """
+    Mira cuáles son los componentes conectados a la
+    estación de inicio
+
+    Args:
+        analyzer (dict]): Datos grafo citybike
+        station ([str]): Estación de partida
+        time ([int]): Tiempo de duración
+
+    Returns:
+        [list]: Lista con las estaciones que cumplen el tiempo 
+    """
+
+    initial_station = gr.adjacents(analyzer['graph'], station)  #Estacion adyacentes a la estación de inicio
+    if initial_station['size'] == 0:
+        print('\nLa ruta que selecciono no tiene estaciones adyacentes, pruebe con otra')
+    else:
+        iterator = it.newIterator(initial_station)
+        while it.hasNext(iterator):
+            stations = it.next(iterator)
+            time_weight = gr.getEdge(analyzer['graph'], station, stations)['weight'] #Peso de cada arco
+            if time_weight < time :
+                A = gr.getEdge(analyzer['graph'], station, stations)['vertexA'] #ID estación A
+                name_a = list(m.get(analyzer['names'], A).values())[1]          #Nombre estación A
+                B = gr.getEdge(analyzer['graph'], station, stations)['vertexB'] #ID estación B
+                name_b = list(m.get(analyzer['names'], B).values())[1]          #Nombre estación B
+                print('\n- '+'Se tiene un camino entre las siguientes estaciones: '+ str(A) + ' '+ '('+name_a+')'+
+                      ' y '+ str(B) + ' ('+ name_b + ')' + ' con un tiempo de '+ str(time_weight))
+                
+
+
 
 #Requerimiento 5 
 
@@ -383,7 +418,6 @@ def minimumCostPath(analyzer, destStation):
     """
     path = djk.pathTo(analyzer['paths'], destStation)
     return path
-
 
 def top_stations(analyzer, selector):
     graph = analyzer["graph"]

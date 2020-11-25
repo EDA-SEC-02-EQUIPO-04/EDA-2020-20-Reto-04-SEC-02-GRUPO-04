@@ -93,6 +93,9 @@ def optionThree():
     else:
         print('Las estaciones ' + firts_station  +' y ' + second_station + ' no pertenecen al mismo cluster')
 
+def optionFour():
+    None
+
 def option_five():
     top_in_stations = controller.top_stations(cont, "in")
     top_out_stations = controller.top_stations(cont, "out")
