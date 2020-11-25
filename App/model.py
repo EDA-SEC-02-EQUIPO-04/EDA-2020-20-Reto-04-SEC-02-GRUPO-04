@@ -53,13 +53,13 @@ def newAnalyzer():
 
     try:
         citybike = {
+                    "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
+                    "map": m.newMap(comparefunction=compare_ids),
+                    "list": lt.newList(),
+                    "station_names": m.newMap(comparefunction=compare_ids),
                     'names':  m.newMap(numelements=50,
                                      maptype='PROBING',
                                      comparefunction=compareStopsIds),
-                    'graph': gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=True,
-                                              size=50,
-                                              comparefunction=compareStopsIds),
                     'routes': gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=50,
@@ -78,11 +78,16 @@ def newAnalyzer():
 # Funciones para agregar informacion al grafos
 
 def addTrip(citybike, trip):
+    station_names = citybike["station_names"]
     origin = trip['start station id']
     destination = trip['end station id']
     originstation = trip['start station name']
     laststation = trip['end station name']
     duration = int(trip['tripduration'])  
+    if m.contains(station_names, trip["start station name"]) != True:
+        m.put(station_names, origin, trip["start station name"])
+    if m.contains(station_names, trip["end station name"]) != True:
+        m.put(station_names, destination, trip["end station name"])
     addStation(citybike, origin, originstation)
     addStation(citybike, destination, laststation)    
     addConnection(citybike, origin, destination, duration)
@@ -500,6 +505,15 @@ def top_cmpfunction(station_1, station_2):
     if station_1 == station_2:
         return 0
     elif station_1 > station_2:
+        return 1
+    else:
+        return -1
+
+def compare_ids(id1, id2):
+    id2 = id2["key"]
+    if id1 == id2:
+        return 0
+    elif id1 > id2:
         return 1
     else:
         return -1
