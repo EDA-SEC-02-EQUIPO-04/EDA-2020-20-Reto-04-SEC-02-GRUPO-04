@@ -118,7 +118,7 @@ def option_five():
     
 def optionSix():
     station = input('Estación de la que parte: ')
-    time = int(input('Tiempo de resistencia: '))
+    time = int(input('Tiempo de resistencia[s]: '))
     controller.adjacentsvertex(cont,station, time)
 
 def optionSeven():    
@@ -140,7 +140,6 @@ def optionSeven():
         haspath = controller.hasPath(cont, final)
         print('Hay camino entre la estación base : ' +
             'y la estación: ' + final + ': ')
-        print(haspath)
         path = controller.minimumCostPath(cont, final)
         if path is not None:
             pathlen = stack.size(path)
