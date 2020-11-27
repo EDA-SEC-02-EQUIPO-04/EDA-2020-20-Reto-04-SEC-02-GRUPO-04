@@ -44,7 +44,7 @@ operación seleccionada.
 #  Variables.
 # ___________________________________________________
 
-bikefile = '201801-1-citibike-tripdata - copia.csv'
+bikefile = '201801-1-citibike-tripdata.csv'
 initialstation = None
 RecursionLimit = 20000
 
