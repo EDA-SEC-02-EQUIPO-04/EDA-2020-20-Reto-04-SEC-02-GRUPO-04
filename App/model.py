@@ -193,6 +193,7 @@ def estacionrecursiva(analyzer, station, timestation, time):
                     else:
                         stationss = recursivestations(station)
                         m.put(savestation, station, stationss)
+                        time_station = time_u
                     lt.addLast(stationss['adjacents'],(stations,time_station))
                     stationss['weight'] = time_u
                 else: 
@@ -224,6 +225,10 @@ def inifinstations(analyzer,initial_station):
             print('\n- '+'Se tiene un camino entre las siguientes estaciones: '+ str(initial_station) + ' '+ '('+name_a+')'+
                     ' y '+ str(stations_2[0]) + ' ('+ name_b + ')' + ' con un tiempo de '+ str(stations_2[1])+ ' segundos.')
         
+def namestation(analyzer, station):
+    name = list(m.get(analyzer['names'], station).values())[1] 
+    return name
+
 
 #Requerimiento 5 
 

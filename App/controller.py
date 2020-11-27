@@ -108,6 +108,9 @@ def adjacentsvertex(citybike, station, time):
 
 #Requerimiento 5
 
+def namesroutes(analyzer, station):
+    return model.namestation(analyzer, station)
+
 def agesroutes(analyzer, agerange):
     return model.agesroutes(analyzer, agerange)
 
