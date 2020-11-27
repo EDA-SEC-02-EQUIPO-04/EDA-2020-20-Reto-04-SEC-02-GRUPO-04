@@ -53,22 +53,18 @@ def newAnalyzer():
 
     try:
         citybike = {
-                    'names':  m.newMap(numelements=50,
+                    'names':  m.newMap(numelements=15000,
                                      maptype='PROBING',
                                      comparefunction=compareStopsIds),
                     'graph': gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
-                                              size=50,
+                                              size=5000,
                                               comparefunction=compareStopsIds),
-                    'routes': gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=True,
-                                              size=50,
-                                              comparefunction=compareStopsIds),
-                    'trips':  m.newMap(numelements=50,
+                    'trips':  m.newMap(numelements=500,
                                      maptype='PROBING',
                                      comparefunction=compareStopsIds),
                     'paths':  None,
-                    'stations': m.newMap(numelements=50,
+                    'stations': m.newMap(numelements=15000,
                                          maptype='PROBING',
                                          comparefunction=compareStopsIds)
 
@@ -128,40 +124,6 @@ def addConnection(citybike, origin, destination, duration):
     return citybike
 
 
-def addTrip_routes(citybike, station, station2, time):
-    origin = station
-    destination = station2
-    originstation = list(m.get(citybike['names'],station).values())[1]
-    laststation = list(m.get(citybike['names'],station2).values())[1]
-    duration = time  
-    addStation_routes(citybike, origin, originstation)
-    addStation_routes(citybike, destination, laststation)    
-    addConnection_routes(citybike, origin, destination, duration)
-    return citybike
-
-def addStation_routes(citybike, stationid, name):
-    """
-    Adiciona una estación como vértice al grafo
-    """
-    try:
-        if not gr.containsVertex(citybike['routes'], stationid):
-            gr.insertVertex(citybike['routes'], stationid)        
-        if not m.contains(citybike['names'], name):
-            m.put(citybike['names'],stationid, name)
-        return citybike
-    except Exception as exp:
-        error.reraise(exp, 'model:addStation')
-
-
-def addConnection_routes(citybike, origin, destination, duration):
-    """
-    Adiciona un arco entre dos estaciones
-    """
-    edge = gr.getEdge(citybike['routes'], origin, destination)
-    if edge is None:
-        gr.addEdge(citybike['routes'], origin, destination, duration)
-    return citybike
-
 def adjacents(analyzer, vertex):
     gr.adjacents(analyzer['graph'],vertex)
 
@@ -192,22 +154,21 @@ def adyacentes(analyzer, station, time:int):
                 stations = it.next(iterator)
                 time_weight = gr.getEdge(analyzer['graph'], station, stations)['weight'] #Peso de cada arco
                 adjacents_st_st = gr.adjacents(analyzer['graph'], stations)
-                if stations == station:                                             #Filtro estación repetida 
+                if stations == station:                                                  #Filtro estación repetida 
                     None
-                elif  adjacents_st_st['size'] == 0 and time_weight < time:
-                    A = gr.getEdge(analyzer['graph'], station, stations)['vertexA'] #ID estación A
-                    name_a = list(m.get(analyzer['names'], A).values())[1]          #Nombre estación A
-                    B = gr.getEdge(analyzer['graph'], station, stations)['vertexB'] #ID estación B
-                    name_b = list(m.get(analyzer['names'], B).values())[1]          #Nombre estación B
+                elif  adjacents_st_st['size'] == 0 and time_weight < time:               #Estaciones que no tienen adyacentes pero cumplen la condición
+                    A = gr.getEdge(analyzer['graph'], station, stations)['vertexA']      #ID estación A
+                    name_a = list(m.get(analyzer['names'], A).values())[1]               #Nombre estación A
+                    B = gr.getEdge(analyzer['graph'], station, stations)['vertexB']      #ID estación B
+                    name_b = list(m.get(analyzer['names'], B).values())[1]               #Nombre estación B
                     print('\n- '+'Se tiene un camino entre las siguientes estaciones: '+ str(A) + ' '+ '('+name_a+')'+
                         ' y '+ str(B) + ' ('+ name_b + ')' + ' con un tiempo de '+ str(time_weight))
-                elif adjacents_st_st['size'] != 0 and time_weight < time:
-                    print(b = gr.adjacents(analyzer['graph'], stations))
-                    print()
-                    estacionrecursiva(analyzer, stations, time_weight)
+                elif adjacents_st_st['size'] != 0 and time_weight < time:                #Estaciones que tienen adyacentes y cumplen con el tiempo 
+                    estacionrecursiva(analyzer, stations, time_weight, time)
+                    print(m.get(analyzer['stations'],stations))
 
-def estacionrecursiva(analyzer, station, time):
-    time_u = time
+def estacionrecursiva(analyzer, station, timestation, time):
+    time_u = timestation
     initial_station = gr.adjacents(analyzer['graph'], station)
     iterator = it.newIterator(initial_station)
     while it.hasNext(iterator):
@@ -218,38 +179,33 @@ def estacionrecursiva(analyzer, station, time):
             time_weight = gr.getEdge(analyzer['graph'], station, stations)['weight']            
             time_u += time_weight
             if time_u <= time:
-
                 stationss = analyzer['stations']
                 existstation = m.contains(stationss, stations)            
                 if existstation:
                     entry = m.get(stationss, stations)
                     infostations = me.getValue(entry)
                 else:
+                    time_u = timestation
                     infostations = recursivestations(stations)
                     m.put(stationss, stations, infostations)
-            stationss['weight'] = time_weight
-            lt.addLast(infostations['adjacents'], stations)
-                x = recursivestations(stations)
-                lt.addLast(analyzer['stations'], x)
-                estacionrecursiva(analyzer, stations, time_u)
-                print(x, station)
-        else: 
-            time_u = time
-            stationss = analyzer['stations']
-            existstation = m.contains(stationss, stations)
-            
-            if existstation:
-                entry = m.get(stationss, stations)
-                infostations = me.getValue(entry)
-            else:
-                infostations = recursivestations(stations)
-                m.put(stationss, stations, infostations)
-            stationss['weight'] = time_weight
-            lt.addLast(infostations['adjacents'], stations)
-
-    print(infostations.keys())
-    print(infostations.values())
-        
+                stationss['weight'] = time_weight
+                print(stationss['weight'])
+                lt.addLast(infostations['adjacents'], stations)
+                print(m.valueSet(stationss))
+                estacionrecursiva(analyzer, stations, time_u, time)                
+            else: 
+                time_u = timestation
+                stationss = analyzer['stations']
+                existstation = m.contains(stationss, stations)
+                
+                if existstation:
+                    entry = m.get(stationss, stations)
+                    infostations = me.getValue(entry)
+                else:
+                    infostations = recursivestations(stations)
+                    m.put(stationss, stations, infostations)
+                stationss['weight'] = time_weight
+                lt.addLast(infostations['adjacents'], stations)
 
 #Requerimiento 5 
 
