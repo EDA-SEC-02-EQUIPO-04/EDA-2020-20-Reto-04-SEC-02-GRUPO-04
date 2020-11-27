@@ -1,4 +1,4 @@
-# Laboratorio 12
+# Reto 4
 
 ### Grafos
 
