@@ -129,3 +129,6 @@ def minimumCostPath(analyzer, destStation):
     Retorna el camino de costo minimo desde initialStation a destStation
     """
     return model.minimumCostPath(analyzer, destStation)
+
+def most_used_stations_by_age_range(analyzer, age_range):
+    return model.most_used_stations_by_age_range(analyzer, age_range)

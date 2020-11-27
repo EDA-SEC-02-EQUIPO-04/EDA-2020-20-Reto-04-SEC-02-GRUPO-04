@@ -55,6 +55,7 @@ def newAnalyzer():
         citybike = {
                     "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
                     "map": m.newMap(comparefunction=compare_ids),
+                    "age_range": m.newMap(comparefunction=compare_maps),
                     "list": lt.newList(),
                     "station_names": m.newMap(comparefunction=compare_ids),
                     'names':  m.newMap(numelements=50,
@@ -67,8 +68,15 @@ def newAnalyzer():
                     'trips':  m.newMap(numelements=50,
                                      maptype='PROBING',
                                      comparefunction=compareStopsIds),
-                    'paths':  None
-                    
+                    'paths':  None,
+                    "edges_map_0_10": m.newMap(comparefunction=compare_map_keys),
+                    "edges_map_11_20": m.newMap(comparefunction=compare_map_keys), 
+                    "edges_map_21_30": m.newMap(comparefunction=compare_map_keys),
+                    "edges_map_31_40": m.newMap(comparefunction=compare_map_keys),
+                    "edges_map_41_50": m.newMap(comparefunction=compare_map_keys),
+                    "edges_map_51_60": m.newMap(comparefunction=compare_map_keys),
+                    "edges_map_60_plus": m.newMap(comparefunction=compare_map_keys)
+
 
         }
         return citybike
@@ -78,6 +86,8 @@ def newAnalyzer():
 # Funciones para agregar informacion al grafos
 
 def addTrip(citybike, trip):
+    user_type = trip["usertype"]
+    birth_year = trip["birth year"]
     station_names = citybike["station_names"]
     origin = trip['start station id']
     destination = trip['end station id']
@@ -89,7 +99,8 @@ def addTrip(citybike, trip):
     if m.contains(station_names, trip["end station name"]) != True:
         m.put(station_names, destination, trip["end station name"])
     addStation(citybike, origin, originstation)
-    addStation(citybike, destination, laststation)    
+    addStation(citybike, destination, laststation)
+    age_range(citybike, origin, destination, duration, birth_year, user_type)    
     addConnection(citybike, origin, destination, duration)
     return citybike
 
@@ -111,11 +122,169 @@ def addConnection(citybike, origin, destination, duration):
     """
     Adiciona un arco entre dos estaciones
     """
+    key = origin + "+" + destination
     edge = gr.getEdge(citybike['graph'], origin, destination)
     if edge is None:
         gr.addEdge(citybike['graph'], origin, destination, duration)
+        value = {"sum": duration, "trips_num": 1}
+        m.put(citybike["map"], key, value)
+    else:
+        entry = m.get(citybike["map"], key)
+        value = me.getValue(entry)
+        value["sum"] += duration
+        value["trips_num"] += 1
+        avg = value["sum"] / value["trips_num"]
+        gr.addEdge(citybike['graph'], origin, destination, avg)
+        m.put(citybike["map"], key, value)
     return citybike
 
+def age_range(citybike, origin, destination, duration, birth_year, user_type):
+    edges_map_0_10 = citybike["edges_map_0_10"]
+    edges_map_11_20 = citybike["edges_map_11_20"]
+    edges_map_21_30 = citybike["edges_map_21_30"]
+    edges_map_31_40 = citybike["edges_map_31_40"]
+    edges_map_41_50 = citybike["edges_map_41_50"]
+    edges_map_51_60 = citybike["edges_map_51_60"]
+    edges_map_60_plus = citybike["edges_map_60_plus"]
+    if user_type == "Customer":
+        age = 2020 - int(birth_year)
+        age_map = citybike["age_range"]
+        key = origin + "+" + destination
+        inverse_key = destination + "+" + origin  
+        if age < 11:
+            age_range = "0-10"
+            entry = m.get(age_map, age_range)
+            if entry is None:
+                m.put(age_map, age_range, edges_map_0_10)
+            if m.get(edges_map_0_10, key) is None and m.get(edges_map_0_10, inverse_key) is None:            
+                value = 1
+                m.put(edges_map_0_10, key, value)
+            elif m.get(edges_map_0_10, key) != None or m.get(edges_map_0_10, inverse_key):
+                if m.get(edges_map_0_10, key) is None:
+                    entry = m.get(edges_map_0_10, inverse_key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_0_10, inverse_key, value)
+                else:
+                    entry = m.get(edges_map_0_10, key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_0_10, key, value)
+        elif age < 21:
+            age_range = "11-20"
+            entry = m.get(age_map, age_range)
+            if entry is None:
+                m.put(age_map, age_range, edges_map_11_20)
+            if m.get(edges_map_11_20, key) is None and m.get(edges_map_11_20, inverse_key) is None:            
+                value = 1
+                m.put(edges_map_11_20, key, value)
+            elif m.get(edges_map_11_20, key) != None or m.get(edges_map_11_20, inverse_key):
+                if m.get(edges_map_11_20, key) is None:
+                    entry = m.get(edges_map_11_20, inverse_key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_11_20, inverse_key, value)
+                else:
+                    entry = m.get(edges_map_11_20, key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_11_20, key, value)
+        elif age < 31:
+            age_range = "21-30"
+            entry = m.get(age_map, age_range)
+            if entry is None:
+                m.put(age_map, age_range, edges_map_21_30)
+            if m.get(edges_map_21_30, key) is None and m.get(edges_map_21_30, inverse_key) is None:            
+                value = 1
+                m.put(edges_map_21_30, key, value)
+            elif m.get(edges_map_21_30, key) != None or m.get(edges_map_21_30, inverse_key):
+                if m.get(edges_map_21_30, key) is None:
+                    entry = m.get(edges_map_21_30, inverse_key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_21_30, inverse_key, value)
+                else:
+                    entry = m.get(edges_map_21_30, key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_21_30, key, value)
+        elif age < 41:
+            age_range = "31-40"
+            entry = m.get(age_map, age_range)
+            if entry is None:
+                m.put(age_map, age_range, edges_map_31_40)
+            if m.get(edges_map_31_40, key) is None and m.get(edges_map_31_40, inverse_key) is None:            
+                value = 1
+                m.put(edges_map_31_40, key, value)
+            elif m.get(edges_map_31_40, key) != None or m.get(edges_map_31_40, inverse_key):
+                if m.get(edges_map_31_40, key) is None:
+                    entry = m.get(edges_map_31_40, inverse_key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_31_40, inverse_key, value)
+                else:
+                    entry = m.get(edges_map_31_40, key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_31_40, key, value)
+        elif age < 51:
+            age_range = "41-50"
+            entry = m.get(age_map, age_range)
+            if entry is None:
+                m.put(age_map, age_range, edges_map_41_50)
+            if m.get(edges_map_41_50, key) is None and m.get(edges_map_41_50, inverse_key) is None:            
+                value = 1
+                m.put(edges_map_41_50, key, value)
+            elif m.get(edges_map_41_50, key) != None or m.get(edges_map_41_50, inverse_key):
+                if m.get(edges_map_41_50, key) is None:
+                    entry = m.get(edges_map_41_50, inverse_key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_41_50, inverse_key, value)
+                else:
+                    entry = m.get(edges_map_41_50, key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_41_50, key, value)
+        elif age < 61:
+            age_range = "51-60"
+            entry = m.get(age_map, age_range)
+            if entry is None:
+                m.put(age_map, age_range, edges_map_51_60)
+            if m.get(edges_map_51_60, key) is None and m.get(edges_map_51_60, inverse_key) is None:            
+                value = 1
+                m.put(edges_map_51_60, key, value)
+            elif m.get(edges_map_51_60, key) != None or m.get(edges_map_51_60, inverse_key):
+                if m.get(edges_map_51_60, key) is None:
+                    entry = m.get(edges_map_51_60, inverse_key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_51_60, inverse_key, value)
+                else:
+                    entry = m.get(edges_map_51_60, key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_51_60, key, value)
+        elif age > 60:
+            age_range = "60+"
+            entry = m.get(age_map, age_range)
+            if entry is None:
+                m.put(age_map, age_range, edges_map_60_plus)
+            if m.get(edges_map_60_plus, key) is None and m.get(edges_map_60_plus, inverse_key) is None:            
+                value = 1
+                m.put(edges_map_60_plus, key, value)
+            elif m.get(edges_map_60_plus, key) != None or m.get(edges_map_60_plus, inverse_key):
+                if m.get(edges_map_60_plus, key) is None:
+                    entry = m.get(edges_map_60_plus, inverse_key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_60_plus, inverse_key, value)
+                else:
+                    entry = m.get(edges_map_60_plus, key)
+                    value = me.getValue(entry)
+                    value += 1
+                    m.put(edges_map_60_plus, key, value)
+    return citybike
 
 def addTrip_routes(citybike, station, station2, time):
     origin = station
@@ -453,6 +622,51 @@ def low_stations(analyzer):
     third = me.getValue(third_entry)
     return first, second, third
     
+def most_used_stations_by_age_range(citybike, age_range):
+    age_map = citybike["age_range"]
+    lst = lt.newList()
+    selected_entry = m.get(age_map, age_range)
+    selected_map = me.getValue(selected_entry)
+    selected_map_keys = m.keySet(selected_map)
+    iterator = it.newIterator(selected_map_keys)
+    greatest = 0
+    second = 0
+    while it.hasNext(iterator):
+        stations_id = it.next(iterator)
+        entry = m.get(selected_map, stations_id)
+        if me.getValue(entry) > greatest:
+            greatest_key = me.getKey(entry)
+            greatest = me.getValue(entry)
+        if me.getValue(entry) > second and me.getValue(entry) <= greatest:
+            second_key = me.getKey(entry)
+            second = me.getValue(entry)
+    value = greatest
+    greatest_pos = lt.isPresent(selected_map_keys, greatest_key)
+    second_pos = lt.isPresent(selected_map_keys, second_key)
+    lt.deleteElement(selected_map_keys, greatest_pos)
+    lt.deleteElement(selected_map_keys, second_pos)
+    station_names = citybike["station_names"]
+    ids_0 = greatest_key.split("+")
+    ids_1 = second_key.split("+")
+    key_0 = m.get(station_names, ids_0[0])["value"]
+    key_1 = m.get(station_names, ids_0[1])["value"]
+    key_2 = m.get(station_names, ids_1[0])["value"]
+    key_3 = m.get(station_names, ids_1[1])["value"]
+    pareja_1 = key_0 + " y " + key_1
+    pareja_2 = key_2 + " y " + key_3
+    lt.addFirst(lst, pareja_1)
+    if greatest != second:
+        lt.addFirst(lst, pareja_2)
+    if greatest == second:
+        iterator = it.newIterator(selected_map_keys) 
+        while it.hasNext(iterator):
+            entry = m.get(selected_map, it.next(iterator))
+            if me.getValue(entry) == greatest:
+                key_4 = m.get(citybike["station_names"], it.next(iterator).split("+")[0])["value"]
+                key_5 = m.get(citybike["station_names"], it.next(iterator).split("+")[1])["value"]
+                pareja_3 = key_4 + " y " + key_5
+                lt.addFirst(lst, pareja_3)
+    return lst, value
 # ==============================
 # Funciones Helper.
 # ==============================
@@ -517,3 +731,35 @@ def compare_ids(id1, id2):
         return 1
     else:
         return -1
+
+def compare_maps(map1, map2):
+    if map1 == map2["key"]:
+        return 0
+    elif map1 > map2["key"]:
+        return 1
+    else:
+        return -1
+
+def compare_keys(key1, key2):
+    if key1 == key2:
+        return 0
+    elif key1 > key2:
+        return 1
+    else:
+        return -1
+
+def compare_map_keys(key1, key2):
+    if type(key2) is not str:
+        if key1 == key2["key"]:
+            return 0
+        elif key1 > key2["key"]:
+            return 1
+        else:
+            return -1
+    else:
+        if key1 == key2:
+            return 0
+        elif key1 > key2:
+            return 1
+        else:
+            return -1
