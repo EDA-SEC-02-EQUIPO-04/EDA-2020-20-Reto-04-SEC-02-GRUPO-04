@@ -197,7 +197,7 @@ def estacionrecursiva(analyzer, station, timestation, time):
                 time_u = timestation
                 stationss = analyzer['stations']
                 existstation = m.contains(stationss, stations)
-                
+                 
                 if existstation:
                     entry = m.get(stationss, stations)
                     infostations = me.getValue(entry)
@@ -206,6 +206,9 @@ def estacionrecursiva(analyzer, station, timestation, time):
                     m.put(stationss, stations, infostations)
                 stationss['weight'] = time_weight
                 lt.addLast(infostations['adjacents'], stations)
+
+def inifinstations():
+    None
 
 #Requerimiento 5 
 
