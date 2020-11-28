@@ -54,7 +54,7 @@ def newAnalyzer():
     try:
         citybike = {
 
-                    "graph": gr.newGraph(datastructure="ADJ_LIST", True, 1000, compare_stations),
+                    "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
                     "map": m.newMap(comparefunction=compare_ids),
                     "age_range": m.newMap(comparefunction=compare_maps),
                     "list": lt.newList(),
