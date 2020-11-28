@@ -645,46 +645,49 @@ def most_used_stations_by_age_range(citybike, age_range):
     age_map = citybike["age_range"]
     lst = lt.newList()
     selected_entry = m.get(age_map, age_range)
-    selected_map = me.getValue(selected_entry)
-    selected_map_keys = m.keySet(selected_map)
-    iterator = it.newIterator(selected_map_keys)
-    greatest = 0
-    second = 0
-    while it.hasNext(iterator):
-        stations_id = it.next(iterator)
-        entry = m.get(selected_map, stations_id)
-        if me.getValue(entry) > greatest:
-            greatest_key = me.getKey(entry)
-            greatest = me.getValue(entry)
-        if me.getValue(entry) > second and me.getValue(entry) <= greatest:
-            second_key = me.getKey(entry)
-            second = me.getValue(entry)
-    value = greatest
-    greatest_pos = lt.isPresent(selected_map_keys, greatest_key)
-    second_pos = lt.isPresent(selected_map_keys, second_key)
-    lt.deleteElement(selected_map_keys, greatest_pos)
-    lt.deleteElement(selected_map_keys, second_pos)
-    station_names = citybike["station_names"]
-    ids_0 = greatest_key.split("+")
-    ids_1 = second_key.split("+")
-    key_0 = m.get(station_names, ids_0[0])["value"]
-    key_1 = m.get(station_names, ids_0[1])["value"]
-    key_2 = m.get(station_names, ids_1[0])["value"]
-    key_3 = m.get(station_names, ids_1[1])["value"]
-    pareja_1 = key_0 + " y " + key_1
-    pareja_2 = key_2 + " y " + key_3
-    lt.addFirst(lst, pareja_1)
-    if greatest != second:
-        lt.addFirst(lst, pareja_2)
-    if greatest == second:
-        iterator = it.newIterator(selected_map_keys) 
+    try:
+        selected_map = me.getValue(selected_entry)
+        selected_map_keys = m.keySet(selected_map)
+        iterator = it.newIterator(selected_map_keys)
+        greatest = 0
+        second = 0
         while it.hasNext(iterator):
-            entry = m.get(selected_map, it.next(iterator))
-            if me.getValue(entry) == greatest:
-                key_4 = m.get(citybike["station_names"], it.next(iterator).split("+")[0])["value"]
-                key_5 = m.get(citybike["station_names"], it.next(iterator).split("+")[1])["value"]
-                pareja_3 = key_4 + " y " + key_5
-                lt.addFirst(lst, pareja_3)
+            stations_id = it.next(iterator)
+            entry = m.get(selected_map, stations_id)
+            if me.getValue(entry) > greatest:
+                greatest_key = me.getKey(entry)
+                greatest = me.getValue(entry)
+            if me.getValue(entry) > second and me.getValue(entry) <= greatest:
+                second_key = me.getKey(entry)
+                second = me.getValue(entry)
+        value = greatest
+        greatest_pos = lt.isPresent(selected_map_keys, greatest_key)
+        second_pos = lt.isPresent(selected_map_keys, second_key)
+        lt.deleteElement(selected_map_keys, greatest_pos)
+        lt.deleteElement(selected_map_keys, second_pos)
+        station_names = citybike["station_names"]
+        ids_0 = greatest_key.split("+")
+        ids_1 = second_key.split("+")
+        key_0 = m.get(station_names, ids_0[0])["value"]
+        key_1 = m.get(station_names, ids_0[1])["value"]
+        key_2 = m.get(station_names, ids_1[0])["value"]
+        key_3 = m.get(station_names, ids_1[1])["value"]
+        pareja_1 = key_0 + " y " + key_1
+        pareja_2 = key_2 + " y " + key_3
+        lt.addFirst(lst, pareja_1)
+        if greatest != second:
+            lt.addFirst(lst, pareja_2)
+        if greatest == second:
+            iterator = it.newIterator(selected_map_keys) 
+            while it.hasNext(iterator):
+                entry = m.get(selected_map, it.next(iterator))
+                if me.getValue(entry) == greatest:
+                    key_4 = m.get(citybike["station_names"], it.next(iterator).split("+")[0])["value"]
+                    key_5 = m.get(citybike["station_names"], it.next(iterator).split("+")[1])["value"]
+                    pareja_3 = key_4 + " y " + key_5
+                    lt.addFirst(lst, pareja_3)
+    except:
+        return None
     return lst, value
 # ==============================
 # Funciones Helper.

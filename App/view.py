@@ -45,7 +45,7 @@ operación seleccionada.
 #  Variables.
 # ___________________________________________________
 
-bikefile = '201801-3-citibike-tripdata.csv'
+bikefile = '201801-1-citibike-tripdata.csv'
 initialstation = None
 RecursionLimit = 20000
 
@@ -179,15 +179,18 @@ def optionNine():
     elif age_range == "g":
         age_range = "60+"
     most_used_stations_by_age_range = controller.most_used_stations_by_age_range(cont, age_range)
-    lst = most_used_stations_by_age_range[0]
-    value = most_used_stations_by_age_range[1]
-    iterator = it.newIterator(lst)
-    print("-------------------------------------------")
-    print("Estaciones adyacentes que más utilizan las personas entre",age_range,"años:\n")
-    while it.hasNext(iterator):
-        print(it.next(iterator))
-    print("-------------------------------------------")
-    print("Total de viajes registrados en el sistema:",value)
+    try:
+        lst = most_used_stations_by_age_range[0]
+        value = most_used_stations_by_age_range[1]
+        iterator = it.newIterator(lst)
+        print("-------------------------------------------")
+        print("Estaciones adyacentes que más utilizan las personas entre",age_range,"años:\n")
+        while it.hasNext(iterator):
+            print(it.next(iterator))
+        print("-------------------------------------------")
+        print("Total de viajes registrados en el sistema:",value)
+    except:
+        print("No existen viajes entre estaciones adyacentes que cumplan con estos parámetros")
 def optionTen():
     None
 
