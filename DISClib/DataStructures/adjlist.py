@@ -283,10 +283,10 @@ def getEdge(graph, vertexa, vertexb):
             edge = it.next(itvertex)
             if (graph['directed']):
                 if (e.either(edge) == vertexa and
-                   (e.other(edge, e.either(edge)) == vertexb)):
+                        (e.other(edge, e.either(edge)) == vertexb)):
                     return edge
-            elif(e.either(edge) == vertexa or
-                 (e.other(edge, e.either(edge)) == vertexa)):
+            elif (e.either(edge) == vertexa or
+                  (e.other(edge, e.either(edge)) == vertexa)):
 
                 if (e.either(edge) == vertexb or
                         (e.other(edge, e.either(edge)) == vertexb)):

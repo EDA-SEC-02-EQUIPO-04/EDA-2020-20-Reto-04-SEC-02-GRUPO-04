@@ -40,14 +40,15 @@ hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
 
-
 # ___________________________________________________
 #  Variables.
 # ___________________________________________________
 
+
 bikefile = '201801-1-citibike-tripdata.csv'
 initialstation = None
 RecursionLimit = 20000
+
 
 # ___________________________________________________
 #  Menu principal.
@@ -59,15 +60,15 @@ def printMenu():
     print('1- Inicializar Analizador')
     print('2- Cargar información City Bike')
     print('3- Calcular componentes conectados')
-    print('4- Ruta Circular a seguir')
-    print('5- Estaciones críticas')
-    print('6- Ruta según resitencia')
-    print('7- Recomendador de rutas')
-    print('8- Ruta de interés')
-    print('9- Estaciones para publicidad')
-    print('10- Identificador mantenimiento de bicicletas')
+    print('4- Ruta Circular a seguir')  # j.alegria
+    print('5- Estaciones críticas')  # af.romerob1
+    print('6- Ruta según resistencia')  # ma.vargas73
+    print('7- Recomendador de rutas')  # ma.vargas73
+    print('8- Ruta de interés turístico')  # j.alegria
+    print('9- Estaciones para publicidad')  # af.romerob1 y ma.vargas73
     print('0- Salir')
     print('-----------------------------------------------')
+
 
 def optiontwo():
     year = int(input('Año actual: '))
@@ -80,7 +81,8 @@ def optiontwo():
     print('El límite de recursión actual: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(RecursionLimit)
     print('El límite de recursión se ajusta a: ' + str(RecursionLimit))
-   
+
+
 def optionThree():
     firts_station = input('\nID primera estación: ')
     second_station = input('ID segunda estación: ')
@@ -88,12 +90,25 @@ def optionThree():
           str(controller.connectedComponents(cont)))
     sc = controller.sameComponent(cont, firts_station, second_station)
     if (sc == True):
-        print('Las estaciones ' + firts_station +' y ' + second_station + ' pertenecen al mismo cluster')
+        print('Las estaciones ' + firts_station + ' y ' + second_station + ' pertenecen al mismo cluster')
     else:
-        print('Las estaciones ' + firts_station  +' y ' + second_station + ' no pertenecen al mismo cluster')
+        print('Las estaciones ' + firts_station + ' y ' + second_station + ' no pertenecen al mismo cluster')
 
-def optionFour():
-    None
+
+def option_four():
+    print('Ingrese el total de tiempo disponible: ')
+    print('Ejemplo: Entre 180 y 240 minutos')
+    begin_time = input('Rango inferior de minutos: ')
+    end_time = input('Rango superior de minutos: ')
+    start_station = input('Código de estación de inicio: ')
+    circular_quantity_found, report = controller.circular_route(cont, begin_time, end_time, start_station)
+    print(f'Se encontraron {circular_quantity_found} recorridos circulares')
+    for index, station in enumerate(report):
+        print(f'Impresión de estación #{index}')
+        print(f'Comienzo en estación {station["start_station"]}')
+        print(f'Termina en estación {station["end_station"]}')
+        print(f'Duración {station["duration"]}\n')
+
 
 def option_five():
     top_in_stations = controller.top_stations(cont, "in")
@@ -114,20 +129,23 @@ def option_five():
     print(lowest_stations[1])
     print(lowest_stations[2])
     print("-------------------------------------------")
-    
+
+
 def optionSix():
     station = input('Estación de la que parte: ')
-    time = int(input('Tiempo de resistencia[s]: '))
-    controller.adjacentsvertex(cont,station, time)
 
-def optionSeven():    
+    time = int(input('Tiempo de resistencia[s]: '))
+    controller.adjacentsvertex(cont, station, time)
+
+
+def optionSeven():
     print('1. 0 - 10')
     print('2. 11 - 20')
     print('3. 21 - 30')
     print('4. 31 - 40')
     print('5. 41 - 50')
     print('6. 51 - 60')
-    print('7. 60+')    
+    print('7. 60+')
     agerange = int(input('Seleccione un rango de edad: '))
     initial, final, name_ini, name_fin = controller.agesroutes(cont, agerange)
     if initial == None and final == None and name_ini == None and name_fin == None:
@@ -137,12 +155,13 @@ def optionSeven():
         controller.adjacents(cont, initial)
         controller.adjacentsvertex
         haspath = controller.hasPath(cont, final)
+
         if haspath == False:
             print('\nNo hay camino entre la estación base : ' + initial +
-                ' y la estación: ' + final + ': ')
-        else: 
+                  ' y la estación: ' + final + ': ')
+        else:
             print('Hay camino entre la estación base : ' + initial +
-                ' y la estación: ' + final + ': ')
+                  ' y la estación: ' + final + ': ')
         path = controller.minimumCostPath(cont, final)
         if path is not None:
             pathlen = stack.size(path)
@@ -154,16 +173,34 @@ def optionSeven():
                 name_a = controller.namesroutes(cont, station_1)
                 name_b = controller.namesroutes(cont, station_2)
                 print('Rutas en el recorrido con su duración\n')
-                print(station_1 +' (' + name_a + ' )' ' - ' + station_2+' ('+ name_b + ' )' )
+                print(station_1 + ' (' + name_a + ' )' ' - ' + station_2 + ' (' + name_b + ' )')
+
 
         else:
             print('No hay camino')
 
-def optionEight():
-    None
+
+def option_eight():
+    print('Ingrese el punto central de su ubicación actual.')
+    lat = input('Latitud: ')
+    long = input('Longitud: ')
+    print('Ingrese un punto central de interés para buscar estaciones en esa localización.')
+    lat_i = input('Latitud: ')
+    long_i = input('Longitud: ')
+    radius = input('Radio de búsqueda en millas: ')
+    nearest, nearest_turistic, estimated_time, list_stations = controller.turistic_interest(cont, lat, long, lat_i,
+                                                                                            long_i, radius)
+    print(f'La estación más cercana a su ubicación es la {nearest}, y a su lugar de interés es la {nearest_turistic}')
+    print(f'Se estima un viaje que dure {estimated_time} en las siguientes estaciones: ')
+    iterator = it.newIterator(list_stations)
+    while it.hasNext(iterator):
+        station = it.next(iterator)
+        print(f'- Estación {station["vertexA"]}')
+
 
 def optionNine():
-    age_range = input("Ingrese la letra correspondiente al rango de edad deseado:\na. 0-10\nb. 11-20\nc. 21-30\nd. 31-40\ne. 41-50\nf. 51-60\ng. 60+\n> ")
+    age_range = input(
+        "Ingrese la letra correspondiente al rango de edad deseado:\na. 0-10\nb. 11-20\nc. 21-30\nd. 31-40\ne. 41-50\nf. 51-60\ng. 60+\n> ")
     if age_range == "a":
         age_range = "0-10"
     elif age_range == "b":
@@ -179,20 +216,19 @@ def optionNine():
     elif age_range == "g":
         age_range = "60+"
     most_used_stations_by_age_range = controller.most_used_stations_by_age_range(cont, age_range)
+
     try:
         lst = most_used_stations_by_age_range[0]
         value = most_used_stations_by_age_range[1]
         iterator = it.newIterator(lst)
         print("-------------------------------------------")
-        print("Estaciones adyacentes que más utilizan las personas entre",age_range,"años:\n")
+        print("Estaciones adyacentes que más utilizan las personas entre", age_range, "años:\n")
         while it.hasNext(iterator):
             print(it.next(iterator))
         print("-------------------------------------------")
-        print("Total de viajes registrados en el sistema:",value)
+        print("Total de viajes registrados en el sistema:", value)
     except:
         print("No existen viajes entre estaciones adyacentes que cumplan con estos parámetros")
-def optionTen():
-    None
 
 
 """
@@ -211,7 +247,8 @@ while True:
     elif int(inputs[0]) == 3:
         optionThree()
     elif int(inputs[0]) == 4:
-        optionFour()
+        execution_time = timeit.timeit(option_four, number=1)
+        print("Tiempo de ejecución: " + str(execution_time))
     elif int(inputs[0]) == 5:
         execution_time = timeit.timeit(option_five, number=1)
         print("Tiempo de ejecución: " + str(execution_time))
@@ -220,11 +257,8 @@ while True:
     elif int(inputs[0]) == 7:
         optionSeven()
     elif int(inputs[0]) == 8:
-        optionEight()
+        option_eight()
     elif int(inputs[0]) == 9:
         optionNine()
-    elif int(inputs[0]) == 10:
-        optionTen()
     else:
         sys.exit(0)
-sys.exit(0)
