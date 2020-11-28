@@ -135,3 +135,7 @@ def minimumCostPath(analyzer, destStation):
 
 def adjacents(analyzer, vertex):
     model.adjacents(analyzer, vertex)
+
+def most_used_stations_by_age_range(analyzer, age_range):
+    return model.most_used_stations_by_age_range(analyzer, age_range)
+

@@ -27,6 +27,7 @@
 import sys
 import config
 from App import controller
+from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import stack
 import timeit
 
@@ -162,8 +163,31 @@ def optionEight():
     None
 
 def optionNine():
-    None
-
+    age_range = input("Ingrese la letra correspondiente al rango de edad deseado:\na. 0-10\nb. 11-20\nc. 21-30\nd. 31-40\ne. 41-50\nf. 51-60\ng. 60+\n> ")
+    if age_range == "a":
+        age_range = "0-10"
+    elif age_range == "b":
+        age_range = "11-20"
+    elif age_range == "c":
+        age_range = "21-30"
+    elif age_range == "d":
+        age_range = "31-40"
+    elif age_range == "e":
+        age_range = "41-50"
+    elif age_range == "f":
+        age_range = "51-60"
+    elif age_range == "g":
+        age_range = "60+"
+    most_used_stations_by_age_range = controller.most_used_stations_by_age_range(cont, age_range)
+    lst = most_used_stations_by_age_range[0]
+    value = most_used_stations_by_age_range[1]
+    iterator = it.newIterator(lst)
+    print("-------------------------------------------")
+    print("Estaciones adyacentes que más utilizan las personas entre",age_range,"años:\n")
+    while it.hasNext(iterator):
+        print(it.next(iterator))
+    print("-------------------------------------------")
+    print("Total de viajes registrados en el sistema:",value)
 def optionTen():
     None
 
