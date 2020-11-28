@@ -336,8 +336,8 @@ def adyacentes(analyzer, station, time:int):
                     name_a = list(m.get(analyzer['names'], A).values())[1]               #Nombre estación A
                     B = gr.getEdge(analyzer['graph'], station, stations)['vertexB']      #ID estación B
                     name_b = list(m.get(analyzer['names'], B).values())[1]               #Nombre estación B
-                    # print('\n- '+'Se tiene un camino entre las siguientes estaciones: '+ str(A) + ' '+ '('+name_a+')'+
-                    #     ' y '+ str(B) + ' ('+ name_b + ')' + ' con un tiempo de '+ str(time_weight)+ ' segundos.')
+                    print('\n- '+'Se tiene un camino entre las siguientes estaciones: '+ str(A) + ' '+ '('+name_a+')'+
+                        ' y '+ str(B) + ' ('+ name_b + ')' + ' con un tiempo de '+ str(time_weight)+ ' segundos.')
                 elif adjacents_st_st['size'] != 0 and time_weight < time:                #Estaciones que tienen adyacentes que cumplen con el tiempo 
                     estacionrecursiva(analyzer, stations, time_weight, time)
         
