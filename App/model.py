@@ -55,6 +55,7 @@ de creacion y consulta sobre las estructuras de datos.
 def newAnalyzer():
     try:
         citybike = {
+
             "graph": gr.newGraph("ADJ_LIST", True, 1000, compare_stations),
             "map": m.newMap(comparefunction=compare_ids),
             "age_range": m.newMap(comparefunction=compare_maps),
@@ -63,11 +64,7 @@ def newAnalyzer():
             'names': m.newMap(numelements=50,
                               maptype='PROBING',
                               comparefunction=compareStopsIds),
-            'routes': gr.newGraph(datastructure='ADJ_LIST',
-                                  directed=True,
-                                  size=50,
-                                  comparefunction=compareStopsIds),
-            'trips': m.newMap(numelements=50,
+            'trips': m.newMap(numelements=500,
                               maptype='PROBING',
                               comparefunction=compareStopsIds),
             'paths': None,
@@ -78,12 +75,29 @@ def newAnalyzer():
             "edges_map_41_50": m.newMap(comparefunction=compare_map_keys),
             "edges_map_51_60": m.newMap(comparefunction=compare_map_keys),
             "edges_map_60_plus": m.newMap(comparefunction=compare_map_keys),
+            'stations': m.newMap(numelements=15000,
+                                 maptype='PROBING',
+                                 comparefunction=compareStopsIds),
             'durations': [],
             'locations': [],
+
         }
         return citybike
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
+
+
+def recursivestations(station):
+    try:
+        station = {
+            'station': station,
+            'weight': None,
+            'adjacents': lt.newList('SINGLE_LINKED')
+
+        }
+        return station
+    except Exception as exp:
+        error.reraise(exp, 'model:recursivestations')
 
 
 # Funciones para agregar informacion al grafos
@@ -334,65 +348,111 @@ def adjacents(analyzer, vertex):
 
 # Requerimiento 4
 
-def adjacentscomponents(analyzer, station1, time):
+def adyacentes(analyzer, station, time: int):
     """
     Mira cuáles son los componentes conectados a la
     estación de inicio
 
     Args:
-        analyzer ([dict]): Datos grafo citybike
-        station1 ([str]): Estación de inicio
+        analyzer (dict]): Datos grafo citybike
+        station ([str]): Estación de partida
+        time ([int]): Tiempo de duración
+
+    Returns:
+        [list]: Lista con las estaciones que cumplen el tiempo 
     """
-    values = gr.adjacents(analyzer['graph'], station1)  # Lista estaciones adyacentes
-
-    connections = lt.newList('SINGLE_LINKED')
-    if values['size'] == 0:
-        print('\nLa para que selecciono no tiene estaciones adyacentes, pruebe con otra ruta')
+    if gr.containsVertex(analyzer['graph'], station) == False:
+        print('\nEsta parada no existe, pruebe con otra')
     else:
-        for i in range(1, values['size'] + 1):
-            station = lt.getElement(gr.adjacents(analyzer['graph'], station1), i)  # Número estación adyacente
-            time_weight = gr.getEdge(analyzer['graph'], station1, station)['weight']  # Peso del arco
-            adjacent_station = gr.adjacents(analyzer['graph'], station)
-            if adjacent_station['size'] == 0 and time_weight <= time:
-                save = (station, time_weight, list(m.get(analyzer['names'], station).values())[1])
-                lt.addLast(connections, save)
-                addTrip_routes(analyzer, station1, station, time_weight)
-            elif adjacent_station['size'] != 0:
-                for j in range(1, values['size'] + 1):
-                    stationc = lt.getElement(gr.adjacents(analyzer['graph'], station1), j)
-                    if stationc == station:
-                        None
-                    else:
-                        stationsrecursive(analyzer, station, stationc, time)
-    return connections
-
-
-def stationsrecursive(analyzer, station, stationc, time):
-    adjacent_station = gr.adjacents(analyzer['graph'], stationc)
-    time_u = time
-    if adjacent_station['size'] == 0:
-        print(str(stationc) + 's')
-        print(type(station))
-        print(type(stationc))
-        x = gr.getEdge(analyzer['graph'], station, stationc)['weight']
-        print(x)
-        time_u += x
-        print(time_u)
-        if time_u <= time:
-            addTrip_routes(analyzer, station, stationc, x)
-            time_u = time
+        initial_station = gr.adjacents(analyzer['graph'], station)  # Estacion adyacentes a la estación de inicio
+        if initial_station['size'] == 0:
+            print('\nLa ruta que selecciono no tiene estaciones adyacentes, pruebe con otra')
         else:
-            time_u = time
-            None
-    else:
-        for j in range(1, adjacent_station['size'] + 1):
-            stationc = lt.getElement(gr.adjacents(analyzer['graph'], station), j)
-            adjacent_station = gr.adjacents(analyzer['graph'], station)
+            iterator = it.newIterator(initial_station)
+            while it.hasNext(iterator):
+                stations = it.next(iterator)
+                time_weight = gr.getEdge(analyzer['graph'], station, stations)['weight']  # Peso de cada arco
+                adjacents_st_st = gr.adjacents(analyzer['graph'], stations)
+                if stations == station:  # Filtro estación repetida
+                    None
+                elif adjacents_st_st[
+                    'size'] == 0 and time_weight < time:  # Estaciones que no tienen adyacentes pero cumplen la condición
+                    A = gr.getEdge(analyzer['graph'], station, stations)['vertexA']  # ID estación A
+                    name_a = list(m.get(analyzer['names'], A).values())[1]  # Nombre estación A
+                    B = gr.getEdge(analyzer['graph'], station, stations)['vertexB']  # ID estación B
+                    name_b = list(m.get(analyzer['names'], B).values())[1]  # Nombre estación B
+                    print('\n- ' + 'Se tiene un camino entre las siguientes estaciones: ' + str(
+                        A) + ' ' + '(' + name_a + ')' +
+                          ' y ' + str(B) + ' (' + name_b + ')' + ' con un tiempo de ' + str(time_weight) + ' segundos.')
+                elif adjacents_st_st[
+                    'size'] != 0 and time_weight < time:  # Estaciones que tienen adyacentes que cumplen con el tiempo
+                    estacionrecursiva(analyzer, stations, time_weight, time)
 
-            print(stationc)
-            print(adjacent_station)
-            x = gr.getEdge(analyzer['graph'], station, stationc)['weight']
-            stationsrecursive(analyzer, station, stationc, time)
+    inifinstations(analyzer, station)
+
+
+def estacionrecursiva(analyzer, station, timestation, time):
+    time_u = timestation
+    initial_station = gr.adjacents(analyzer['graph'], station)
+    iterator = it.newIterator(initial_station)
+    while it.hasNext(iterator):
+        stations = it.next(iterator)
+        if stations == station:
+            None
+        elif time_u <= time:  # Comprobación tiempo
+            time_weight = gr.getEdge(analyzer['graph'], station, stations)['weight']
+            time_u += time_weight
+            if time_u <= time:
+                time_station = 0
+                adjacents = gr.adjacents(analyzer['graph'], stations)['size']
+                if adjacents == 0:
+                    savestation = analyzer['stations']
+                    existstation = m.contains(savestation, station)
+                    if existstation:
+                        entry = m.get(savestation, station)
+                        stationss = me.getValue(entry)
+                        time_station = time_u
+                    else:
+                        stationss = recursivestations(station)
+                        m.put(savestation, station, stationss)
+                        time_station = time_u
+                    lt.addLast(stationss['adjacents'], (stations, time_station))
+                    stationss['weight'] = time_u
+                else:
+                    estacionrecursiva(analyzer, stations, time_u, time)
+
+            else:
+                time_u = timestation
+
+
+def inifinstations(analyzer, initial_station):
+    """Obtiene las últimas estaciones de las estaciones 
+    adyacentes que cumplen con los requerimientos
+
+    Args:
+        stations (dict): Diccionario con las estaciones adyacentes 
+        initial_station (int): Estación de partida
+
+    Returns:
+        str,str: Retorna la estación inicial y final del recorrido
+    """
+    iterator = it.newIterator(m.valueSet(analyzer['stations']))
+    while it.hasNext(iterator):
+        stationss = it.next(iterator)['adjacents']
+        iterator_2 = it.newIterator(stationss)
+        while it.hasNext(iterator_2):
+            stations_2 = it.next(iterator_2)
+            name_a = list(m.get(analyzer['names'], initial_station).values())[1]
+            name_b = list(m.get(analyzer['names'], stations_2[0]).values())[1]
+            print('\n- ' + 'Se tiene un camino entre las siguientes estaciones: ' + str(
+                initial_station) + ' ' + '(' + name_a + ')' +
+                  ' y ' + str(stations_2[0]) + ' (' + name_b + ')' + ' con un tiempo de ' + str(
+                stations_2[1]) + ' segundos.')
+
+
+def namestation(analyzer, station):
+    name = list(m.get(analyzer['names'], station).values())[1]
+    return name
 
 
 # Requerimiento 5
@@ -404,7 +464,7 @@ def newage(year):
 
     Args:
         year(str): Rango de años en que nació la persona 
-    return:
+    return:x
         Diccionario del año correspondiente con sus estaciones de
         entrada y salida 
     """
@@ -648,46 +708,49 @@ def most_used_stations_by_age_range(citybike, age_range):
     age_map = citybike["age_range"]
     lst = lt.newList()
     selected_entry = m.get(age_map, age_range)
-    selected_map = me.getValue(selected_entry)
-    selected_map_keys = m.keySet(selected_map)
-    iterator = it.newIterator(selected_map_keys)
-    greatest = 0
-    second = 0
-    while it.hasNext(iterator):
-        stations_id = it.next(iterator)
-        entry = m.get(selected_map, stations_id)
-        if me.getValue(entry) > greatest:
-            greatest_key = me.getKey(entry)
-            greatest = me.getValue(entry)
-        if me.getValue(entry) > second and me.getValue(entry) <= greatest:
-            second_key = me.getKey(entry)
-            second = me.getValue(entry)
-    value = greatest
-    greatest_pos = lt.isPresent(selected_map_keys, greatest_key)
-    second_pos = lt.isPresent(selected_map_keys, second_key)
-    lt.deleteElement(selected_map_keys, greatest_pos)
-    lt.deleteElement(selected_map_keys, second_pos)
-    station_names = citybike["station_names"]
-    ids_0 = greatest_key.split("+")
-    ids_1 = second_key.split("+")
-    key_0 = m.get(station_names, ids_0[0])["value"]
-    key_1 = m.get(station_names, ids_0[1])["value"]
-    key_2 = m.get(station_names, ids_1[0])["value"]
-    key_3 = m.get(station_names, ids_1[1])["value"]
-    pareja_1 = key_0 + " y " + key_1
-    pareja_2 = key_2 + " y " + key_3
-    lt.addFirst(lst, pareja_1)
-    if greatest != second:
-        lt.addFirst(lst, pareja_2)
-    if greatest == second:
+    try:
+        selected_map = me.getValue(selected_entry)
+        selected_map_keys = m.keySet(selected_map)
         iterator = it.newIterator(selected_map_keys)
+        greatest = 0
+        second = 0
         while it.hasNext(iterator):
-            entry = m.get(selected_map, it.next(iterator))
-            if me.getValue(entry) == greatest:
-                key_4 = m.get(citybike["station_names"], it.next(iterator).split("+")[0])["value"]
-                key_5 = m.get(citybike["station_names"], it.next(iterator).split("+")[1])["value"]
-                pareja_3 = key_4 + " y " + key_5
-                lt.addFirst(lst, pareja_3)
+            stations_id = it.next(iterator)
+            entry = m.get(selected_map, stations_id)
+            if me.getValue(entry) > greatest:
+                greatest_key = me.getKey(entry)
+                greatest = me.getValue(entry)
+            if me.getValue(entry) > second and me.getValue(entry) <= greatest:
+                second_key = me.getKey(entry)
+                second = me.getValue(entry)
+        value = greatest
+        greatest_pos = lt.isPresent(selected_map_keys, greatest_key)
+        second_pos = lt.isPresent(selected_map_keys, second_key)
+        lt.deleteElement(selected_map_keys, greatest_pos)
+        lt.deleteElement(selected_map_keys, second_pos)
+        station_names = citybike["station_names"]
+        ids_0 = greatest_key.split("+")
+        ids_1 = second_key.split("+")
+        key_0 = m.get(station_names, ids_0[0])["value"]
+        key_1 = m.get(station_names, ids_0[1])["value"]
+        key_2 = m.get(station_names, ids_1[0])["value"]
+        key_3 = m.get(station_names, ids_1[1])["value"]
+        pareja_1 = key_0 + " y " + key_1
+        pareja_2 = key_2 + " y " + key_3
+        lt.addFirst(lst, pareja_1)
+        if greatest != second:
+            lt.addFirst(lst, pareja_2)
+        if greatest == second:
+            iterator = it.newIterator(selected_map_keys)
+            while it.hasNext(iterator):
+                entry = m.get(selected_map, it.next(iterator))
+                if me.getValue(entry) == greatest:
+                    key_4 = m.get(citybike["station_names"], it.next(iterator).split("+")[0])["value"]
+                    key_5 = m.get(citybike["station_names"], it.next(iterator).split("+")[1])["value"]
+                    pareja_3 = key_4 + " y " + key_5
+                    lt.addFirst(lst, pareja_3)
+    except:
+        return None
     return lst, value
 
 

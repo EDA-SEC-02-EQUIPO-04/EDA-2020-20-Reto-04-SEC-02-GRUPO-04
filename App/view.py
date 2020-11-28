@@ -133,7 +133,8 @@ def option_five():
 
 def optionSix():
     station = input('Estación de la que parte: ')
-    time = int(input('Tiempo de resistencia: '))
+
+    time = int(input('Tiempo de resistencia[s]: '))
     controller.adjacentsvertex(cont, station, time)
 
 
@@ -154,17 +155,27 @@ def optionSeven():
         controller.adjacents(cont, initial)
         controller.adjacentsvertex
         haspath = controller.hasPath(cont, final)
-        print('Hay camino entre la estación base : ' +
-              'y la estación: ' + final + ': ')
-        print(haspath)
+
+        if haspath == False:
+            print('\nNo hay camino entre la estación base : ' + initial +
+                  ' y la estación: ' + final + ': ')
+        else:
+            print('Hay camino entre la estación base : ' + initial +
+                  ' y la estación: ' + final + ': ')
         path = controller.minimumCostPath(cont, final)
         if path is not None:
             pathlen = stack.size(path)
-            print('El camino es de longitud: ' + str(pathlen))
-            while not stack.isEmpty(path):
+            print('\nEl camino es de longitud: ' + str(pathlen))
+            while (not stack.isEmpty(path)):
                 stop = stack.pop(path)
-                print(stop)
-                print('Parte de la ruta ' + name_ini + ' para llegar a ' + name_fin)
+                station_1 = stop['vertexA']
+                station_2 = stop['vertexB']
+                name_a = controller.namesroutes(cont, station_1)
+                name_b = controller.namesroutes(cont, station_2)
+                print('Rutas en el recorrido con su duración\n')
+                print(station_1 + ' (' + name_a + ' )' ' - ' + station_2 + ' (' + name_b + ' )')
+
+
         else:
             print('No hay camino')
 
@@ -205,15 +216,19 @@ def optionNine():
     elif age_range == "g":
         age_range = "60+"
     most_used_stations_by_age_range = controller.most_used_stations_by_age_range(cont, age_range)
-    lst = most_used_stations_by_age_range[0]
-    value = most_used_stations_by_age_range[1]
-    iterator = it.newIterator(lst)
-    print("-------------------------------------------")
-    print("Estaciones adyacentes que más utilizan las personas entre", age_range, "años:\n")
-    while it.hasNext(iterator):
-        print(it.next(iterator))
-    print("-------------------------------------------")
-    print("Total de viajes registrados en el sistema:", value)
+
+    try:
+        lst = most_used_stations_by_age_range[0]
+        value = most_used_stations_by_age_range[1]
+        iterator = it.newIterator(lst)
+        print("-------------------------------------------")
+        print("Estaciones adyacentes que más utilizan las personas entre", age_range, "años:\n")
+        while it.hasNext(iterator):
+            print(it.next(iterator))
+        print("-------------------------------------------")
+        print("Total de viajes registrados en el sistema:", value)
+    except:
+        print("No existen viajes entre estaciones adyacentes que cumplan con estos parámetros")
 
 
 """
