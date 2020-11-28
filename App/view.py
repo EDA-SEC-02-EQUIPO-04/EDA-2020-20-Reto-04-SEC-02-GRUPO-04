@@ -104,7 +104,7 @@ def option_four():
     circular_quantity_found, report = controller.circular_route(cont, begin_time, end_time, start_station)
     print(f'Se encontraron {circular_quantity_found} recorridos circulares')
     for index, station in enumerate(report):
-        print(f'Impresión de estación #{index}')
+        print(f'Impresión de la estación #{index}')
         print(f'Comienzo en estación {station["start_station"]}')
         print(f'Termina en estación {station["end_station"]}')
         print(f'Duración {station["duration"]}\n')
