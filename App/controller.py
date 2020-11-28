@@ -80,6 +80,8 @@ def totalStations(citybike):
 def totalConnections(citybike):
     return model.totalConnections(citybike)
 
+#Requerimiento 1
+
 def connectedComponents(citybike):
     """
     Número de componentes fuertemente conectados
@@ -92,12 +94,7 @@ def sameComponent(citybike, s1, s2):
     """
     return model.sameCC(citybike, s1, s2)
 
-def adjacents(analyzer, vertex):
-    model.adjacents(analyzer, vertex)
-
-def adjacentsvertex(citybike, station, time):
-    return model.adjacentscomponents(citybike,station, time)
-
+#Requerimiento 3
 
 def top_stations(analyzer, selector):
     return model.top_stations(analyzer, selector)
@@ -105,6 +102,14 @@ def top_stations(analyzer, selector):
 def low_stations(analyzer):
     return model.low_stations(analyzer)
 
+#Requerimiento 4 
+def adjacentsvertex(citybike, station, time):
+    return model.adyacentes(citybike,station, time)
+
+#Requerimiento 5
+
+def namesroutes(analyzer, station):
+    return model.namestation(analyzer, station)
 
 def agesroutes(analyzer, agerange):
     return model.agesroutes(analyzer, agerange)
@@ -116,13 +121,11 @@ def minimumCostPaths(analyzer, initialStation):
     """
     return model.minimumCostPaths(analyzer, initialStation)
 
-
 def hasPath(analyzer, destStation):
     """
     Informa si existe un camino entre initialStation y destStation
     """
     return model.hasPath(analyzer, destStation)
-
 
 def minimumCostPath(analyzer, destStation):
     """
@@ -130,5 +133,9 @@ def minimumCostPath(analyzer, destStation):
     """
     return model.minimumCostPath(analyzer, destStation)
 
+def adjacents(analyzer, vertex):
+    model.adjacents(analyzer, vertex)
+
 def most_used_stations_by_age_range(analyzer, age_range):
     return model.most_used_stations_by_age_range(analyzer, age_range)
+

@@ -45,9 +45,7 @@ operación seleccionada.
 #  Variables.
 # ___________________________________________________
 
-
-
-bikefile = '201801-1-citibike-tripdata.csv'
+bikefile = '201801-3-citibike-tripdata.csv'
 initialstation = None
 RecursionLimit = 20000
 
@@ -94,6 +92,9 @@ def optionThree():
     else:
         print('Las estaciones ' + firts_station  +' y ' + second_station + ' no pertenecen al mismo cluster')
 
+def optionFour():
+    None
+
 def option_five():
     top_in_stations = controller.top_stations(cont, "in")
     top_out_stations = controller.top_stations(cont, "out")
@@ -116,7 +117,7 @@ def option_five():
     
 def optionSix():
     station = input('Estación de la que parte: ')
-    time = int(input('Tiempo de resistencia: '))
+    time = int(input('Tiempo de resistencia[s]: '))
     controller.adjacentsvertex(cont,station, time)
 
 def optionSeven():    
@@ -136,17 +137,25 @@ def optionSeven():
         controller.adjacents(cont, initial)
         controller.adjacentsvertex
         haspath = controller.hasPath(cont, final)
-        print('Hay camino entre la estación base : ' +
-            'y la estación: ' + final + ': ')
-        print(haspath)
+        if haspath == False:
+            print('\nNo hay camino entre la estación base : ' + initial +
+                ' y la estación: ' + final + ': ')
+        else: 
+            print('Hay camino entre la estación base : ' + initial +
+                ' y la estación: ' + final + ': ')
         path = controller.minimumCostPath(cont, final)
         if path is not None:
             pathlen = stack.size(path)
-            print('El camino es de longitud: ' + str(pathlen))
+            print('\nEl camino es de longitud: ' + str(pathlen))
             while (not stack.isEmpty(path)):
                 stop = stack.pop(path)
-                print(stop)
-                print('Parte de la ruta '+ name_ini+' para llegar a '+name_fin)
+                station_1 = stop['vertexA']
+                station_2 = stop['vertexB']
+                name_a = controller.namesroutes(cont, station_1)
+                name_b = controller.namesroutes(cont, station_2)
+                print('Rutas en el recorrido con su duración\n')
+                print(station_1 +' (' + name_a + ' )' ' - ' + station_2+' ('+ name_b + ' )' )
+
         else:
             print('No hay camino')
 
