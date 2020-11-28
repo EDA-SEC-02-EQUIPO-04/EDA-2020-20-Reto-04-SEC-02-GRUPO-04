@@ -63,10 +63,9 @@ def printMenu():
     print('4- Ruta Circular a seguir')  # j.alegria
     print('5- Estaciones críticas')  # af.romerob1
     print('6- Ruta según resistencia')  # ma.vargas73
-    print('7- Recomendador de rutas')  # af.romerob1 y ma.vargas73
+    print('7- Recomendador de rutas')  # ma.vargas73
     print('8- Ruta de interés turístico')  # j.alegria
-    print('9- Estaciones para publicidad')  # ma.vargas73
-    print('10- Identificador mantenimiento de bicicletas')  # j.alegria
+    print('9- Estaciones para publicidad')  # af.romerob1 y ma.vargas73
     print('0- Salir')
     print('-----------------------------------------------')
 
@@ -109,7 +108,6 @@ def option_four():
         print(f'Comienzo en estación {station["start_station"]}')
         print(f'Termina en estación {station["end_station"]}')
         print(f'Duración {station["duration"]}\n')
-
 
 
 def option_five():
@@ -163,7 +161,7 @@ def optionSeven():
         if path is not None:
             pathlen = stack.size(path)
             print('El camino es de longitud: ' + str(pathlen))
-            while (not stack.isEmpty(path)):
+            while not stack.isEmpty(path):
                 stop = stack.pop(path)
                 print(stop)
                 print('Parte de la ruta ' + name_ini + ' para llegar a ' + name_fin)
@@ -172,7 +170,21 @@ def optionSeven():
 
 
 def option_eight():
-    None
+    print('Ingrese el punto central de su ubicación actual.')
+    lat = input('Latitud: ')
+    long = input('Longitud: ')
+    print('Ingrese un punto central de interés para buscar estaciones en esa localización.')
+    lat_i = input('Latitud: ')
+    long_i = input('Longitud: ')
+    radius = input('Radio de búsqueda en millas: ')
+    nearest, nearest_turistic, estimated_time, list_stations = controller.turistic_interest(cont, lat, long, lat_i,
+                                                                                            long_i, radius)
+    print(f'La estación más cercana a su ubicación es la {nearest}, y a su lugar de interés es la {nearest_turistic}')
+    print(f'Se estima un viaje que dure {estimated_time} en las siguientes estaciones: ')
+    iterator = it.newIterator(list_stations)
+    while it.hasNext(iterator):
+        station = it.next(iterator)
+        print(f'- Estación {station["vertexA"]}')
 
 
 def optionNine():
@@ -204,10 +216,6 @@ def optionNine():
     print("Total de viajes registrados en el sistema:", value)
 
 
-def option_ten():
-    None
-
-
 """
 Menu principal
 """
@@ -224,7 +232,8 @@ while True:
     elif int(inputs[0]) == 3:
         optionThree()
     elif int(inputs[0]) == 4:
-        option_four()
+        execution_time = timeit.timeit(option_four, number=1)
+        print("Tiempo de ejecución: " + str(execution_time))
     elif int(inputs[0]) == 5:
         execution_time = timeit.timeit(option_five, number=1)
         print("Tiempo de ejecución: " + str(execution_time))
@@ -233,15 +242,8 @@ while True:
     elif int(inputs[0]) == 7:
         optionSeven()
     elif int(inputs[0]) == 8:
-        print('Ingrese un punto central para consultar accidentes en esa localización.')
-        latitude = input('Latitud: ')
-        longitude = input('Longitud: ')
-        radius = input('Radio de búsqueda en millas: ')
         option_eight()
     elif int(inputs[0]) == 9:
         optionNine()
-    elif int(inputs[0]) == 10:
-        option_ten()
     else:
         sys.exit(0)
-sys.exit(0)

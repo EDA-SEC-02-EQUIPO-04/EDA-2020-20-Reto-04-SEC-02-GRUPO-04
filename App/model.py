@@ -40,6 +40,7 @@ assert config
 from DISClib.Algorithms.Graphs import scc
 from collections import Counter
 import datetime
+from math import radians, cos, sin, asin, sqrt
 
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
@@ -78,6 +79,7 @@ def newAnalyzer():
             "edges_map_51_60": m.newMap(comparefunction=compare_map_keys),
             "edges_map_60_plus": m.newMap(comparefunction=compare_map_keys),
             'durations': [],
+            'locations': [],
         }
         return citybike
     except Exception as exp:
@@ -712,9 +714,49 @@ def circular_route(citybike, max_duration, start_station):
     return n_routes - not_valid, report
 
 
+def get_turistic_area(citybike, latitude_, longitude_, lat_i, long_i, radius):
+    smallest_distance_station = ('0', -1)
+    for point in citybike['locations']:
+        lat_point, lon_point = point['value']
+        distance_between_points = distance(latitude_, float(lat_point), longitude_, float(lon_point))
+        if distance_between_points < smallest_distance_station[1] or smallest_distance_station[1] == -1:
+            if radius >= distance_between_points:
+                smallest_distance_station = (point['key'], distance_between_points)
+    smallest_interest_station = ('0', -1)
+    for point in citybike['locations']:
+        lat_point, lon_point = point['value']
+        distance_between_points = distance(lat_i, float(lat_point), long_i, float(lon_point))
+        if distance_between_points < smallest_interest_station[1] or smallest_interest_station[1] == -1:
+            if radius >= distance_between_points:
+                smallest_interest_station = (point['key'], distance_between_points)
+
+    estimated_time = datetime.timedelta(seconds=0)
+    search = djk.Dijkstra(citybike['graph'], smallest_distance_station[0])
+    list_stations = djk.pathTo(search, smallest_interest_station[0])
+
+    iterator = it.newIterator(list_stations)
+    while it.hasNext(iterator):
+        station = it.next(iterator)
+        for station_d in citybike['durations']:
+            if station["vertexA"] == station_d['key']:
+                estimated_time += station_d['value']
+    return smallest_distance_station[0], smallest_interest_station[0], estimated_time, list_stations
+
+
 # ==============================
 # Funciones Helper.
 # ==============================
+def distance(lat1, lat2, lon1, lon2):
+    lon1, lon2 = radians(lon1), radians(lon2)
+    lat1, lat2 = radians(lat1), radians(lat2)
+    # Haversine formula
+    dlon, dlat = lon2 - lon1, lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    # Radius of earth in miles.
+    r = 3956
+    return c * r
+
 
 # ==============================
 # Funciones de Comparación.

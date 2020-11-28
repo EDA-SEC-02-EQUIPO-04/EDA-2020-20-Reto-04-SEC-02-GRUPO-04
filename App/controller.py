@@ -69,6 +69,9 @@ def loadFile(citybike, tripfile, year):
         start = datetime.datetime.strptime(trip['starttime'][0], "%Y-%m-%d %H:%M:%S")
         end = datetime.datetime.strptime(trip['stoptime'][0], "%Y-%m-%d %H:%M:%S")
         citybike['durations'].append({'key': trip['start station id'], 'value': end - start})
+        # Add location
+        citybike['locations'].append({'key': trip['start station id'],
+                                      'value': (trip["start station latitude"], trip["start station longitude"])})
     return citybike
 
 
@@ -155,3 +158,8 @@ def most_used_stations_by_age_range(analyzer, age_range):
 def circular_route(analyzer, begin_time, end_time, start_station):
     max_duration = int(end_time) - int(begin_time)
     return model.circular_route(analyzer, max_duration, start_station)
+
+
+def turistic_interest(analyzer, lat, long, lat_i, long_i, radius):
+    latitude_, longitude_, lat_i, long_i, radius_ = float(lat), float(long), float(lat_i), float(long_i), float(radius)
+    return model.get_turistic_area(analyzer, latitude_, longitude_, lat_i, long_i, radius_)
